@@ -101,6 +101,8 @@
                     </a>
                     <div class="sidebar-submenu">
                         <ul>
+                            <li><a href="<%= request.getContextPath() %>/#"><i class="uil uil-plus-circle me-1"></i> List of Export Request Products</a></li>
+                            <li><a href="<%= request.getContextPath() %>/#"><i class="uil uil-plus-circle me-1"></i>Product Overview</a></li>
                             <li><a href="<%= request.getContextPath() %>/viewListWarehouses"><i class="uil uil-list-ul me-1"></i> List of Warehouses</a></li>
                             <li><a href="<%= request.getContextPath() %>/addWarehouse"><i class="uil uil-plus-circle me-1"></i> Add Warehouse</a></li>
                         </ul>
@@ -126,13 +128,13 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a href="<%= request.getContextPath() %>/viewExportOrders">
-                                    <i class="uil uil-list-ul me-1"></i> View Orders
+                                <a href="<%= request.getContextPath() %>/viewListRequestProducts">
+                                    <i class="uil uil-list-ul me-1"></i> View List Request Products
                                 </a>
                             </li>
                             <li>
-                                <a href="<%= request.getContextPath() %>/createExportOrder">
-                                    <i class="uil uil-plus-circle me-1"></i> Create Order
+                                <a href="<%= request.getContextPath() %>/createRequestProduct">
+                                    <i class="uil uil-plus-circle me-1"></i> Create Request Product
                                 </a>
                             </li>
                         </ul>
@@ -147,13 +149,18 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a href="<%= request.getContextPath() %>/viewImportOrders">
-                                    <i class="uil uil-list-ul me-1"></i> View Orders
+                                <a href="<%= request.getContextPath() %>/viewListProductsToBuy">
+                                    <i class="uil uil-list-ul me-1"></i> View List Products To Buy
                                 </a>
                             </li>
                             <li>
-                                <a href="<%= request.getContextPath() %>/createImportOrder">
-                                    <i class="uil uil-plus-circle me-1"></i> Create Order
+                                <a href="<%= request.getContextPath() %>/buyProduct">
+                                    <i class="uil uil-plus-circle me-1"></i> Buy Product
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<%= request.getContextPath() %>/supplierResponses">
+                                    <i class="uil uil-plus-circle me-1"></i> Supplier responses
                                 </a>
                             </li>
                         </ul>

@@ -33,7 +33,7 @@
         <thead class="table-light">
         <tr>
             <th>Date</th>
-            <th>Product</th>
+            <th>Product Code</th>
             <th>Warehouse</th>
             <th>Adjusted By</th>
             <th>Old Quantity</th>
@@ -51,7 +51,7 @@
                         <td>
                             <c:forEach var="p" items="${productList}">
                                 <c:if test="${p.productId == ad.productId}">
-                                    ${p.name}
+                                    ${p.productCode}
                                 </c:if>
                             </c:forEach>
                         </td>

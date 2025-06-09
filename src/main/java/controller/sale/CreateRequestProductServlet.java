@@ -14,8 +14,8 @@ import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "CreateExportOrderServlet", urlPatterns = {"/createExportOrder"})
-public class CreateExportOrderServlet extends HttpServlet {
+@WebServlet(name = "CreateRequestProductServlet", urlPatterns = {"/createRequestProduct"})
+public class CreateRequestProductServlet extends HttpServlet {
 
     private static final String LAYOUT_PAGE = "/views/dashboard.jsp";
     private static final String CREATE_EXPORT_ORDER_CONTENT = "/views/sales/createExportOrder.jsp";
