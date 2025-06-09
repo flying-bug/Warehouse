@@ -90,6 +90,33 @@ public class AccountDAO extends DBConnect {
     }
 
 
+    // Lấy tài khoản theo email
+    public Accounts getAccountByEmail(String email) {
+        String sql = "SELECT * FROM accounts WHERE email = ?";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return new Accounts(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("full_name"),
+                        rs.getString("profile_image"),
+                        rs.getInt("role_id")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+
     // Lấy tài khoản theo ID
     public Accounts getAccountById(int id) {
         String sql = "SELECT * FROM accounts WHERE account_id = ?";

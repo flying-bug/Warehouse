@@ -113,31 +113,49 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li><a href="<%= request.getContextPath() %>/viewListInventory"><i class="uil uil-list-ul me-1"></i> List of Inventory</a></li>
-                            <li><a href="<%= request.getContextPath() %>/addInventory"><i class="uil uil-plus-circle me-1"></i> Add Inventory</a></li>
+                            <li><a href="<%= request.getContextPath() %>/viewAdjustment"><i class="uil uil-plus-circle me-1"></i>Adjustments</a></li>
                         </ul>
                     </div>
                 </li>
 
+                <!-- Sales -->
                 <li class="sidebar-dropdown">
                     <a href="javascript:void(0)">
-                        <i class="uil uil-clipboard-alt me-2 d-inline-block"></i> Inventory
+                        <i class="uil uil-shopping-cart-alt me-2 d-inline-block"></i> Sales
                     </a>
                     <div class="sidebar-submenu">
                         <ul>
-                            <li><a href="<%= request.getContextPath() %>/viewListInventory"><i class="uil uil-list-ul me-1"></i> List of Inventory</a></li>
-                            <li><a href="<%= request.getContextPath() %>/addInventory"><i class="uil uil-plus-circle me-1"></i> Add Inventory</a></li>
+                            <li>
+                                <a href="<%= request.getContextPath() %>/viewExportOrders">
+                                    <i class="uil uil-list-ul me-1"></i> View Orders
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<%= request.getContextPath() %>/createExportOrder">
+                                    <i class="uil uil-plus-circle me-1"></i> Create Order
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
 
+                <!-- Purchase -->
                 <li class="sidebar-dropdown">
                     <a href="javascript:void(0)">
-                        <i class="uil uil-clipboard-alt me-2 d-inline-block"></i> Inventory
+                        <i class="uil uil-box me-2 d-inline-block"></i> Purchase
                     </a>
                     <div class="sidebar-submenu">
                         <ul>
-                            <li><a href="<%= request.getContextPath() %>/viewListInventory"><i class="uil uil-list-ul me-1"></i> List of Inventory</a></li>
-                            <li><a href="<%= request.getContextPath() %>/addInventory"><i class="uil uil-plus-circle me-1"></i> Add Inventory</a></li>
+                            <li>
+                                <a href="<%= request.getContextPath() %>/viewImportOrders">
+                                    <i class="uil uil-list-ul me-1"></i> View Orders
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<%= request.getContextPath() %>/createImportOrder">
+                                    <i class="uil uil-plus-circle me-1"></i> Create Order
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </li>
@@ -259,7 +277,7 @@
                     <div class="col">
                         <div class="text-sm-start text-center">
                             <p class="mb-0 text-muted">
-                                <script>document.write(new Date().getFullYear())</script> © Warehouse Clothing. Design by SWP Pro!
+                                <script>document.write(new Date().getFullYear())</script> © Warehouse Clothing. Design by Group 4 SWP Pro!
                             </p>
                         </div>
                     </div>

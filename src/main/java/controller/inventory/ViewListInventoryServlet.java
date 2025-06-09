@@ -3,13 +3,12 @@ package controller.inventory;
 import dal.InventoryDAO;
 import dal.ProductDAO;
 import dal.WarehouseDAO;
-import model.Inventory;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Inventory;
 import model.Products;
 import model.Warehouses;
 
@@ -23,36 +22,40 @@ public class ViewListInventoryServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        int defaultPageSize = 10;
+        int pageSize = 10;
         int currentPage = 1;
+
+        // Lấy tham số page nếu có
         String pageParam = request.getParameter("page");
         if (pageParam != null) {
-            currentPage = Integer.parseInt(pageParam);
+            try {
+                currentPage = Integer.parseInt(pageParam);
+            } catch (NumberFormatException ignored) {
+            }
         }
 
         InventoryDAO inventoryDAO = new InventoryDAO();
-
-        List<Inventory> fullInventoryList = inventoryDAO.getAllInventory();
-        int totalItems = fullInventoryList.size();
-        int totalPages = (int) Math.ceil((double) totalItems / defaultPageSize);
-        int startIndex = (currentPage - 1) * defaultPageSize;
-        int endIndex = Math.min(startIndex + defaultPageSize, totalItems);
-        List<Inventory> inventoryList = fullInventoryList.subList(startIndex, endIndex);
-
         ProductDAO productDAO = new ProductDAO();
-        List<Products> products = productDAO.getAllProducts();
-
         WarehouseDAO warehouseDAO = new WarehouseDAO();
-        List<Warehouses> warehouses = warehouseDAO.getAllWarehouses();
 
-        request.setAttribute("productList", products);
-        request.setAttribute("warehouseList", warehouses);
+        // Danh sách đầy đủ để phân trang
+        List<Inventory> fullList = inventoryDAO.getAllInventory();
+        int totalItems = fullList.size();
+        int totalPages = (int) Math.ceil((double) totalItems / pageSize);
 
-        request.setAttribute("inventoryList", inventoryList);
+        int startIndex = (currentPage - 1) * pageSize;
+        int endIndex = Math.min(startIndex + pageSize, totalItems);
+        List<Inventory> paginatedList = fullList.subList(startIndex, endIndex);
+
+        // Truyền dữ liệu ra view
+        request.setAttribute("inventoryList", paginatedList);
+        request.setAttribute("productList", productDAO.getAllProducts());
+        request.setAttribute("warehouseList", warehouseDAO.getAllWarehouses());
         request.setAttribute("currentPage", currentPage);
         request.setAttribute("totalPages", totalPages);
 
-        // Forward the request to the JSP
-        request.getRequestDispatcher("/views/inventory/viewInventory.jsp").forward(request, response);
+        // Sử dụng layout với PAGE_CONTENT
+        request.setAttribute("PAGE_CONTENT", "/views/inventory/viewInventory.jsp");
+        request.getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
     }
 }
