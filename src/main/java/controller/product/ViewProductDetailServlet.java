@@ -1,24 +1,29 @@
 package controller.product;
 
 import dal.ProductDAO;
-import dal.SupplierDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import model.Products;
 
 import java.io.IOException;
-import java.math.BigDecimal;
+import java.util.logging.Logger;
 
-@WebServlet(name = "ViewProductDetailServlet", urlPatterns = {"/viewProductDetail"})
+@WebServlet(name = "ViewProductDetailServlet", urlPatterns = "/viewProductDetail")
 public class ViewProductDetailServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(ViewProductDetailServlet.class.getName());
+    private static final String LAYOUT_PAGE = "/views/dashboard.jsp";
+    private static final String PRODUCT_DETAIL_CONTENT = "/views/products/viewProductDetail.jsp";
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Retrieve product ID from request parameter
-        String idParam = request.getParameter("id");
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String idParam = req.getParameter("productId");
+
         if (idParam == null || idParam.isEmpty()) {
-            response.sendRedirect(request.getContextPath() + "/error.jsp");
+            req.setAttribute("fail", "Mã sản phẩm không hợp lệ.");
+            forwardWithLayout(req, resp);
             return;
         }
 
@@ -27,27 +32,26 @@ public class ViewProductDetailServlet extends HttpServlet {
             ProductDAO productDAO = new ProductDAO();
             Products product = productDAO.getProductById(productId);
 
-            int currentSupplierId = product.getSupplierId();
             if (product == null) {
-                response.sendRedirect(request.getContextPath() + "/error.jsp");
-                return;
+                req.setAttribute("fail", "Không tìm thấy sản phẩm.");
+            } else {
+                req.setAttribute("p", product);
             }
 
-            SupplierDAO supplierDAO = new SupplierDAO();
-            request.setAttribute("suppliers", supplierDAO.getAllSuppliers());
-
-            request.setAttribute("p", product);
-            request.setAttribute("currentSupplierId", currentSupplierId);
-            request.getRequestDispatcher("/views/products/viewProductDetail.jsp").forward(request, response);
+            forwardWithLayout(req, resp);
         } catch (NumberFormatException e) {
-            e.printStackTrace();
-            response.sendRedirect(request.getContextPath() + "/error.jsp");
+            LOGGER.severe("Invalid product ID format: " + idParam);
+            req.setAttribute("fail", "Định dạng mã sản phẩm không hợp lệ.");
+            forwardWithLayout(req, resp);
+        } catch (Exception e) {
+            LOGGER.severe("Unexpected error while loading product detail: " + e.getMessage());
+            req.setAttribute("fail", "Lỗi hệ thống khi tải chi tiết sản phẩm.");
+            forwardWithLayout(req, resp);
         }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-
+    private void forwardWithLayout(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("PAGE_CONTENT", PRODUCT_DETAIL_CONTENT);
+        req.getRequestDispatcher(LAYOUT_PAGE).forward(req, resp);
     }
 }

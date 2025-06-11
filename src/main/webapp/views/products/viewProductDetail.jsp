@@ -1,126 +1,97 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page isELIgnored="false" %>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>View Product Details</title>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/dashboard.css">
-    <link rel="stylesheet" href="<%= request.getContextPath() %>/css/addAccount.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        label {
-            font-weight: bold!important;
-            color: #333;
-            margin-bottom: 4px;
-        }
+<%-- File nội dung chi tiết sản phẩm, dùng trong dashboard layout --%>
 
-        .form-group div {
-            background-color: #fdf6e3; /* nền vàng nhẹ */
-            padding: 6px 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            margin-top: 4px;
-        }
-    </style>
-
-
-</head>
-<body>
-
-<jsp:include page="../dashboard.jsp"/>
-
-<div class="main-content">
-    <div class="form-container">
-        <h2><i class="fas fa-box-open"></i> Product Details: ID = ${p.productId}</h2>
-        <c:if test="${empty p}">
-            <div style="color: red; font-weight: bold; text-align: center; margin: 20px;">
-                Không tìm thấy thông tin sản phẩm.
-            </div>
-        </c:if>
-
-        <div class="form-grid">
-            <!-- Left Column -->
-            <div>
-                <div class="form-group">
-                    <label>Product Code:</label>
-                    <div>${p.productCode}</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Name:</label>
-                    <div>${p.name}</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Description:</label>
-                    <div>${p.description}</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Size:</label>
-                    <div>${p.size}</div>
-                </div>
-            </div>
-
-            <!-- Right Column -->
-            <div>
-                <div class="form-group">
-                    <label>Color:</label>
-                    <div>${p.color}</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Material:</label>
-                    <div>${p.material}</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Unit:</label>
-                    <div>${p.unit}</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Supplier:</label>
-                    <div>
-                        <c:choose>
-                            <c:when test="${not empty suppliers}">
-                                <c:forEach items="${suppliers}" var="supplier">
-                                    <c:if test="${currentSupplierId == supplier.supplierId}">
-                                        ${supplier.name}
-                                    </c:if>
-                                </c:forEach>
-                            </c:when>
-                            <c:otherwise>
-                                Không có nhà cung cấp.
-                            </c:otherwise>
-                        </c:choose>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Section -->
-        <div class="form-group">
-            <label>Cost Price ($):</label>
-            <div>${p.costPrice}</div>
-        </div>
-
-        <div class="form-group">
-            <label>Sale Price ($):</label>
-            <div>${p.salePrice}</div>
-        </div>
-
-        <a href="<%= request.getContextPath() %>/viewListProducts"
-           class="btn btn-submit"
-           style="font-size: 13px; padding: 4px 10px; height: auto;">
-            <i class="fas fa-arrow-left"></i> Back
-        </a>
-
-    </div>
+<div class="d-md-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Product Details</h5>
+    <nav aria-label="breadcrumb" class="d-inline-block mt-4 mt-sm-0">
+        <ul class="breadcrumb bg-transparent rounded mb-0 p-0">
+            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/dashboardAdmin">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="${pageContext.request.contextPath}/viewListProducts">Products</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Details</li>
+        </ul>
+    </nav>
 </div>
 
-</body>
-</html>
+<div class="row justify-content-center">
+    <div class="col-lg-10 mt-4">
+        <div class="card border-0 p-4 rounded shadow">
+
+            <c:if test="${empty p}">
+                <div class="alert alert-danger fw-bold text-center">No product information found.</div>
+            </c:if>
+
+            <c:if test="${not empty p}">
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Product Code:</label>
+                        <div class="form-control bg-light">${p.productCode}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Product Name:</label>
+                        <div class="form-control bg-light">${p.name}</div>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Description:</label>
+                        <div class="form-control bg-light">${p.description}</div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Size:</label>
+                        <div class="form-control bg-light">${p.size}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Color:</label>
+                        <div class="form-control bg-light">${p.color}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Material:</label>
+                        <div class="form-control bg-light">${p.material}</div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Unit:</label>
+                        <div class="form-control bg-light">${p.unit}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Cost Price:</label>
+                        <div class="form-control bg-light">${p.costPrice}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Sale Price:</label>
+                        <div class="form-control bg-light">${p.salePrice}</div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Status:</label>
+                        <div class="form-control bg-light">${p.status == 1 ? 'Active' : 'Inactive'}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Minimum Stock Level:</label>
+                        <div class="form-control bg-light">${p.minStockLevel}</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Image URL:</label>
+                        <div class="form-control bg-light text-truncate" title="${p.image}">${p.image}</div>
+                    </div>
+
+                    <!-- Image Preview -->
+                    <c:if test="${not empty p.image}">
+                        <div class="col-12 text-center mt-3">
+                            <img src="${p.image}" alt="Product Image" class="img-thumbnail" style="max-height: 200px;">
+                        </div>
+                    </c:if>
+                </div>
+
+                <div class="mt-4 text-end">
+                    <a href="${pageContext.request.contextPath}/viewListProducts" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to List
+                    </a>
+                </div>
+            </c:if>
+        </div>
+    </div>
+</div>

@@ -16,7 +16,6 @@
 <div class="row justify-content-center">
     <div class="col-lg-10 mt-4">
         <div class="card border-0 p-4 rounded shadow">
-
             <!-- Success / Error Messages -->
             <c:if test="${not empty success}">
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -39,74 +38,92 @@
                 <input type="hidden" name="product_id" value="${p.productId}">
 
                 <div class="row">
-                    <!-- Left Column -->
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Product Code:</label>
-                            <input type="text" name="product_code" value="${p.productCode}" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Name:</label>
-                            <input type="text" name="name" value="${p.name}" class="form-control" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Description:</label>
-                            <textarea name="description" class="form-control" required>${p.description}</textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Size:</label>
-                            <input type="text" name="size" value="${p.size}" class="form-control">
-                        </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="product_code" class="form-label">Product Code<span class="text-danger">*</span>:</label>
+                        <input type="text" id="product_code" name="product_code" class="form-control"
+                               value="${p.productCode}" required>
                     </div>
 
-                    <!-- Right Column -->
-                    <div class="col-md-6">
-                        <div class="mb-3">
-                            <label class="form-label">Color:</label>
-                            <input type="text" name="color" value="${p.color}" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Material:</label>
-                            <input type="text" name="material" value="${p.material}" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Unit:</label>
-                            <input type="text" name="unit" value="${p.unit}" class="form-control">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Supplier:</label>
-                            <c:if test="${empty suppliers}">
-                                <div class="text-danger">Không có nhà cung cấp nào.</div>
-                            </c:if>
-                            <c:if test="${not empty suppliers}">
-                                <select name="supplier_id" class="form-select" required>
-                                    <option value="" disabled>Select a supplier</option>
-                                    <c:forEach items="${suppliers}" var="supplier">
-                                        <option value="${supplier.supplierId}" ${currentSupplierId == supplier.supplierId ? 'selected' : ''}>${supplier.name}</option>
-                                    </c:forEach>
-                                </select>
-                            </c:if>
-                        </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="name" class="form-label">Product Name<span class="text-danger">*</span>:</label>
+                        <input type="text" id="name" name="name" class="form-control"
+                               value="${p.name}" required>
                     </div>
-                </div>
 
-                <!-- Bottom Section -->
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Cost Price:</label>
-                        <input type="number" name="cost_price" step="0.01" value="${p.costPrice}" class="form-control" required>
+                    <div class="col-md-12 mb-3">
+                        <label for="description" class="form-label">Description:</label>
+                        <textarea id="description" name="description" class="form-control" rows="3">${p.description}</textarea>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Sale Price:</label>
-                        <input type="number" name="sale_price" step="0.01" value="${p.salePrice}" class="form-control" required>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="size" class="form-label">Size:</label>
+                        <input type="text" id="size" name="size" class="form-control"
+                               value="${p.size}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="color" class="form-label">Color:</label>
+                        <input type="text" id="color" name="color" class="form-control"
+                               value="${p.color}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="material" class="form-label">Material:</label>
+                        <input type="text" id="material" name="material" class="form-control"
+                               value="${p.material}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="unit" class="form-label">Unit<span class="text-danger">*</span>:</label>
+                        <input type="text" id="unit" name="unit" class="form-control"
+                               value="${p.unit}" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="cost_price" class="form-label">Cost Price<span class="text-danger">*</span>:</label>
+                        <input type="number" step="0.01" min="0" id="cost_price" name="cost_price" class="form-control"
+                               value="${p.costPrice}" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="sale_price" class="form-label">Sale Price<span class="text-danger">*</span>:</label>
+                        <input type="number" step="0.01" min="0" id="sale_price" name="sale_price" class="form-control"
+                               value="${p.salePrice}" required>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="status" class="form-label">Status<span class="text-danger">*</span>:</label>
+                        <select id="status" name="status" class="form-select" required>
+                            <option value="" disabled>Select status</option>
+                            <option value="1" ${p.status == 1 ? 'selected' : ''}>Active</option>
+                            <option value="0" ${p.status == 0 ? 'selected' : ''}>Inactive</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="image" class="form-label">Image URL:</label>
+                        <input type="text" id="image" name="image" class="form-control"
+                               value="${p.image}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="min_stock_level" class="form-label">Minimum Stock Level<span class="text-danger">*</span>:</label>
+                        <input type="number" min="0" id="min_stock_level" name="min_stock_level" class="form-control"
+                               value="${p.minStockLevel}" required>
                     </div>
                 </div>
 
                 <!-- Action buttons -->
-                <div class="text-end">
-                    <button type="submit" class="btn btn-primary me-2"><i class="fas fa-save me-1"></i> Update Product</button>
-                    <button type="reset" class="btn btn-outline-secondary me-2"><i class="fas fa-redo me-1"></i> Reset</button>
-                    <a href="${pageContext.request.contextPath}/viewListProducts" class="btn btn-light"><i class="fas fa-arrow-left me-1"></i> Cancel</a>
+                <div class="mt-4 text-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="uil uil-save me-1"></i> Update Product
+                    </button>
+                    <button type="reset" class="btn btn-outline-secondary me-2">
+                        <i class="uil uil-redo me-1"></i> Reset
+                    </button>
+                    <a href="${pageContext.request.contextPath}/viewListProducts" class="btn btn-light">
+                        <i class="uil uil-times me-1"></i> Cancel
+                    </a>
                 </div>
             </form>
         </div>

@@ -95,18 +95,27 @@
                                value="${sale_price}">
                     </div>
 
-                    <div class="col-md-12 mb-3">
-                        <label for="supplier_id" class="form-label">Supplier<span class="text-danger">*</span>:</label>
-                        <select id="supplier_id" name="supplier_id" class="form-select" required>
-                            <option value="" disabled selected>Select a supplier</option>
-                            <c:if test="${not empty suppliers}">
-                                <c:forEach items="${suppliers}" var="supplier">
-                                    <option value="${supplier.supplierId}" ${supplier.supplierId == supplierId ? 'selected' : ''}>
-                                            ${supplier.name}
-                                    </option>
-                                </c:forEach>
-                            </c:if>
+                    <div class="col-md-4 mb-3">
+                        <label for="status" class="form-label">Status<span class="text-danger">*</span>:</label>
+                        <select id="status" name="status" class="form-select" required>
+                            <option value="" disabled selected>Select status</option>
+                            <option value="1" ${status == 1 ? 'selected' : ''}>Active</option>
+                            <option value="0" ${status == 0 ? 'selected' : ''}>Inactive</option>
                         </select>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="image" class="form-label">Image URL:</label>
+                        <input type="text" id="image" name="image" class="form-control"
+                               placeholder="Enter image URL"
+                               value="${image}">
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label for="min_stock_level" class="form-label">Minimum Stock Level<span class="text-danger">*</span>:</label>
+                        <input type="number" min="0" id="min_stock_level" name="min_stock_level" class="form-control"
+                               placeholder="Enter minimum stock level" required
+                               value="${min_stock_level}">
                     </div>
                 </div>
 

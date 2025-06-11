@@ -65,14 +65,15 @@ public class UpdateAccountServlet extends HttpServlet {
             String phone = request.getParameter("phone");
             String fullName = request.getParameter("full_name");
             int roleId = Integer.parseInt(request.getParameter("role_id"));
+            int status = Integer.parseInt(request.getParameter("status")); // ✅ Thêm dòng này
 
             String errorMsg = null;
 
-            if (phone.isEmpty() || fullName.isEmpty()) {
+            if (phone == null || phone.trim().isEmpty() || fullName == null || fullName.trim().isEmpty()) {
                 errorMsg = "Vui lòng nhập đầy đủ thông tin hợp lệ.";
             } else if (!phone.matches("^0\\d{9,11}$")) {
                 errorMsg = "Số điện thoại phải bắt đầu bằng 0 và có từ 10 đến 12 chữ số.";
-            } else if (!password.isEmpty()) {
+            } else if (password != null && !password.trim().isEmpty()) {
                 if (password.length() < 6 ||
                         !password.matches(".*[A-Z].*") ||
                         !password.matches(".*[a-z].*") ||
@@ -96,6 +97,7 @@ public class UpdateAccountServlet extends HttpServlet {
                 return;
             }
 
+            // Xử lý ảnh
             String profileImage = null;
             Part filePart = request.getPart("profile_image");
             if (filePart != null && filePart.getSize() > 0) {
@@ -118,6 +120,7 @@ public class UpdateAccountServlet extends HttpServlet {
                 }
             }
 
+            // Tạo object Accounts để cập nhật
             Accounts account = new Accounts();
             account.setAccount_id(accountId);
             account.setAccount_name(accountName);
@@ -126,8 +129,13 @@ public class UpdateAccountServlet extends HttpServlet {
             account.setFull_name(fullName);
             account.setProfile_image(profileImage != null ? profileImage : existingAccount.getProfile_image());
             account.setRole_id(roleId);
-            account.setPassword(password.isEmpty() ? existingAccount.getPassword() :
-                    BCrypt.hashpw(password, BCrypt.gensalt(12)));
+            account.setStatus(status); // ✅ Set trạng thái mới
+
+            // Password
+            String finalPassword = (password == null || password.trim().isEmpty())
+                    ? existingAccount.getPassword()
+                    : BCrypt.hashpw(password, BCrypt.gensalt(12));
+            account.setPassword(finalPassword);
 
             boolean success = accountDAO.updateAccount(account);
             request.setAttribute(success ? "success" : "fail", success ? "Cập nhật tài khoản thành công." : "Cập nhật tài khoản thất bại.");

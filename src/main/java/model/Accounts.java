@@ -1,28 +1,45 @@
 package model;
 
+import java.sql.Timestamp;
+
 public class Accounts {
     private int account_id;
     private String account_name;
     private String password;
+    private String full_name;
     private String email;
     private String phone;
-    private String full_name;
-    private String profile_image;
     private int role_id;
+    private String profile_image;
+    private int status;
+    private Timestamp created_at;
 
     public Accounts() {
-
     }
 
-    public Accounts(int account_id, String account_name, String password, String email, String phone, String full_name, String profile_image, int role_id) {
+    // Full constructor
+    public Accounts(int account_id, String account_name, String password, String full_name, String email,
+                    String phone, int role_id, String profile_image, int status, Timestamp created_at) {
         this.account_id = account_id;
         this.account_name = account_name;
         this.password = password;
+        this.full_name = full_name;
         this.email = email;
         this.phone = phone;
-        this.full_name = full_name;
-        this.profile_image = profile_image;
         this.role_id = role_id;
+        this.profile_image = profile_image;
+        this.status = status;
+        this.created_at = created_at;
+    }
+
+    // Getters and Setters
+
+    public int getAccount_id() {
+        return account_id;
+    }
+
+    public void setAccount_id(int account_id) {
+        this.account_id = account_id;
     }
 
     public String getAccount_name() {
@@ -33,20 +50,20 @@ public class Accounts {
         this.account_name = account_name;
     }
 
-    public int getAccount_id() {
-        return account_id;
-    }
-
-    public void setAccount_id(int account_id) {
-        this.account_id = account_id;
-    }
-
     public String getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFull_name() {
+        return full_name;
+    }
+
+    public void setFull_name(String full_name) {
+        this.full_name = full_name;
     }
 
     public String getEmail() {
@@ -65,12 +82,12 @@ public class Accounts {
         this.phone = phone;
     }
 
-    public String getFull_name() {
-        return full_name;
+    public int getRole_id() {
+        return role_id;
     }
 
-    public void setFull_name(String full_name) {
-        this.full_name = full_name;
+    public void setRole_id(int role_id) {
+        this.role_id = role_id;
     }
 
     public String getProfile_image() {
@@ -81,11 +98,19 @@ public class Accounts {
         this.profile_image = profile_image;
     }
 
-    public int getRole_id() {
-        return role_id;
+    public int getStatus() {
+        return status;
     }
 
-    public void setRole_id(int role_id) {
-        this.role_id = role_id;
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public Timestamp getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(Timestamp created_at) {
+        this.created_at = created_at;
     }
 }

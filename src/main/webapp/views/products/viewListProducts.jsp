@@ -3,7 +3,7 @@
 <%@ page isELIgnored="false" %>
 
 <div class="d-md-flex justify-content-between align-items-center">
-    <h5 class="mb-0">List of Products</h5>
+    <h5 class="mb-0">Product List</h5>
     <a href="${pageContext.request.contextPath}/addProduct" class="btn btn-primary">
         <i class="uil uil-plus"></i> Add New Product
     </a>
@@ -11,7 +11,7 @@
 
 <div class="row mt-4">
     <div class="col-12">
-        <form method="get" action="filterListProducts" class="row g-3 align-items-end">
+        <form method="get" action="${pageContext.request.contextPath}/filterListProducts" class="row g-3 align-items-end">
             <div class="col-md-3">
                 <label class="form-label">Product Code</label>
                 <input type="text" name="productCode" class="form-control" value="${param.productCode}"/>
@@ -25,16 +25,15 @@
                 <input type="number" step="0.01" name="costPrice" class="form-control" value="${param.costPrice}"/>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Sale Price To</label>
+                <label class="form-label">Cost Price To</label>
                 <input type="number" step="0.01" name="salePrice" class="form-control" value="${param.salePrice}"/>
             </div>
             <div class="col-md-2">
-                <label class="form-label">Supplier</label>
-                <select name="supplierId" class="form-select">
-                    <option value="">All Suppliers</option>
-                    <c:forEach var="supplier" items="${supplierList}">
-                        <option value="${supplier.supplierId}" ${param.supplierId == supplier.supplierId ? 'selected' : ''}>${supplier.name}</option>
-                    </c:forEach>
+                <label class="form-label">Status</label>
+                <select name="status" class="form-select">
+                    <option value="" ${empty param.status ? 'selected' : ''}>All</option>
+                    <option value="1" ${param.status == '1' ? 'selected' : ''}>Active</option>
+                    <option value="0" ${param.status == '0' ? 'selected' : ''}>Inactive</option>
                 </select>
             </div>
             <div class="col-md-12">
@@ -52,11 +51,11 @@
                 <tr>
                     <th>ID</th>
                     <th>Product Code</th>
-                    <th>Name</th>
+                    <th>Product Name</th>
                     <th>Material</th>
                     <th>Cost Price</th>
                     <th>Sale Price</th>
-                    <th>Supplier</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -71,19 +70,16 @@
                                 <td>${prod.material}</td>
                                 <td>$${prod.costPrice}</td>
                                 <td>$${prod.salePrice}</td>
+                                <td>${prod.status == 1 ? 'Active' : 'Inactive'}</td>
                                 <td>
-                                    <c:forEach var="s" items="${supplierList}">
-                                        <c:if test="${s.supplierId == prod.supplierId}">
-                                            ${s.name}
-                                        </c:if>
-                                    </c:forEach>
-                                </td>
-                                <td>
-                                    <a href="updateProduct?id=${prod.productId}" class="btn btn-sm btn-soft-success"><i class="uil uil-pen"></i></a>
-                                    <a href="deleteProduct?id=${prod.productId}" class="btn btn-sm btn-soft-danger" onclick="return confirm('Are you sure delete Product ID: ${prod.productId}?')">
+                                    <a href="${pageContext.request.contextPath}/updateProduct?productId=${prod.productId}" class="btn btn-sm btn-soft-success">
+                                        <i class="uil uil-pen"></i>
+                                    </a>
+                                    <a href="${pageContext.request.contextPath}/deleteProduct?productId=${prod.productId}" class="btn btn-sm btn-soft-danger"
+                                       onclick="return confirm('Are you sure you want to set product ID: ${prod.productId} to inactive?')">
                                         <i class="uil uil-trash"></i>
                                     </a>
-                                    <a href="viewProductDetail?id=${prod.productId}" class="btn btn-sm btn-soft-warning" title="View details">
+                                    <a href="${pageContext.request.contextPath}/viewProductDetail?productId=${prod.productId}" class="btn btn-sm btn-soft-warning" title="View details">
                                         <i class="uil uil-eye"></i>
                                     </a>
                                 </td>
@@ -102,24 +98,24 @@
     </div>
 </div>
 
-<!-- Pagination -->
+<%-- Pagination --%>
 <c:if test="${totalPages > 1}">
     <div class="row mt-4">
         <div class="col-12 d-flex justify-content-center">
             <ul class="pagination">
                 <c:if test="${currentPage > 1}">
                     <li class="page-item">
-                        <a class="page-link" href="?page=${currentPage - 1}">&laquo; Prev</a>
+                        <a class="page-link" href="${pageContext.request.contextPath}/filterListProducts?page=${currentPage - 1}&productCode=${param.productCode}&material=${param.material}&costPrice=${param.costPrice}&salePrice=${param.salePrice}&status=${param.status}">« Previous</a>
                     </li>
                 </c:if>
                 <c:forEach var="i" begin="1" end="${totalPages}">
                     <li class="page-item ${currentPage == i ? 'active' : ''}">
-                        <a class="page-link" href="?page=${i}">${i}</a>
+                        <a class="page-link" href="${pageContext.request.contextPath}/filterListProducts?page=${i}&productCode=${param.productCode}&material=${param.material}&costPrice=${param.costPrice}&salePrice=${param.salePrice}&status=${param.status}">${i}</a>
                     </li>
                 </c:forEach>
                 <c:if test="${currentPage < totalPages}">
                     <li class="page-item">
-                        <a class="page-link" href="?page=${currentPage + 1}">Next &raquo;</a>
+                        <a class="page-link" href="${pageContext.request.contextPath}/filterListProducts?page=${currentPage + 1}&productCode=${param.productCode}&material=${param.material}&costPrice=${param.costPrice}&salePrice=${param.salePrice}&status=${param.status}">Next »</a>
                     </li>
                 </c:if>
             </ul>

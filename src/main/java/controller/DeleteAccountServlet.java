@@ -13,26 +13,32 @@ import java.util.List;
 public class DeleteAccountServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-    }
-
-    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String idStr = request.getParameter("id");
         AccountDAO accountDAO = new AccountDAO();
-        if (idStr != null) {
-            int id = Integer.parseInt(idStr);
-            boolean deleted = accountDAO.deleteAccount(id);
-            if (deleted) {
-                request.setAttribute("success", "Account deleted successfully");
-                request.getRequestDispatcher("/viewListAccounts").forward(request, response);
-            } else {
-                request.setAttribute("fail", "Account deleted failed");
-                request.getRequestDispatcher("/viewListAccounts").forward(request, response);
-            }
 
+        if (idStr != null) {
+            try {
+                int id = Integer.parseInt(idStr);
+                boolean deactivated = accountDAO.deactivateAccount(id);
+                if (deactivated) {
+                    request.setAttribute("success", "Account marked as inactive successfully.");
+                } else {
+                    request.setAttribute("fail", "Failed to mark account as inactive.");
+                }
+            } catch (NumberFormatException e) {
+                request.setAttribute("fail", "Invalid account ID format.");
+            }
+        } else {
+            request.setAttribute("fail", "Account ID not provided.");
         }
+
+        // Forward lại để load danh sách
+        request.getRequestDispatcher("/viewListAccounts").forward(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
     }
 }
-

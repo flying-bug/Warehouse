@@ -13,7 +13,9 @@ public class Products {
     private String unit;
     private BigDecimal costPrice;
     private BigDecimal salePrice;
-    private int supplierId;
+    private int status;
+    private String image;
+    private int minStockLevel;
 
     // Default constructor
     public Products() {
@@ -21,7 +23,8 @@ public class Products {
 
     // Parameterized constructor
     public Products(int productId, String productCode, String name, String description, String size, String color,
-                    String material, String unit, BigDecimal costPrice, BigDecimal salePrice, int supplierId) {
+                    String material, String unit, BigDecimal costPrice, BigDecimal salePrice, int status,
+                    String image, int minStockLevel) {
         this.productId = productId;
         this.productCode = productCode;
         this.name = name;
@@ -32,7 +35,9 @@ public class Products {
         this.unit = unit;
         this.costPrice = costPrice;
         this.salePrice = salePrice;
-        this.supplierId = supplierId;
+        this.status = status;
+        this.image = image;
+        this.minStockLevel = minStockLevel;
     }
 
     // Getters and Setters
@@ -116,12 +121,28 @@ public class Products {
         this.salePrice = salePrice;
     }
 
-    public int getSupplierId() {
-        return supplierId;
+    public int getStatus() {
+        return status;
     }
 
-    public void setSupplierId(int supplierId) {
-        this.supplierId = supplierId;
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public int getMinStockLevel() {
+        return minStockLevel;
+    }
+
+    public void setMinStockLevel(int minStockLevel) {
+        this.minStockLevel = minStockLevel;
     }
 
     // toString() for debugging
@@ -138,7 +159,9 @@ public class Products {
                 ", unit='" + unit + '\'' +
                 ", costPrice=" + costPrice +
                 ", salePrice=" + salePrice +
-                ", supplierId=" + supplierId +
+                ", status=" + status +
+                ", image='" + image + '\'' +
+                ", minStockLevel=" + minStockLevel +
                 '}';
     }
 }

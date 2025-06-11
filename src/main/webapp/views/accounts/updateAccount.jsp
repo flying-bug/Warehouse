@@ -60,7 +60,7 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Password:</label>
                                 <div class="input-group">
-                                    <input type="password" name="password" value="${a.password}" id="password" class="form-control">
+                                    <input type="password" name="password" value="" id="password" class="form-control" placeholder="No change no action!" >
                                     <span class="input-group-text" onclick="togglePassword(this)" style="cursor: pointer;"><i class="uil uil-eye"></i></span>
                                 </div>
                             </div>
@@ -87,6 +87,14 @@
                                     <c:forEach items="${roles}" var="role">
                                         <option value="${role.role_id}" ${role.role_id == a.role_id ? 'selected' : ''}>${role.role_name}</option>
                                     </c:forEach>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status:</label>
+                                <select name="status" class="form-select">
+                                    <option value="1" ${a.status == 1 ? 'selected' : ''}>Active</option>
+                                    <option value="0" ${a.status == 0 ? 'selected' : ''}>Inactive</option>
                                 </select>
                             </div>
                         </div>

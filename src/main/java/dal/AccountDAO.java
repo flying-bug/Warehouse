@@ -9,23 +9,23 @@ import java.util.List;
 
 public class AccountDAO extends DBConnect {
 
-    // Lấy danh sách tất cả tài khoản
     public List<Accounts> getAllAccounts() {
         List<Accounts> list = new ArrayList<>();
         String sql = "SELECT * FROM accounts";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
-            ResultSet rs = ps.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Accounts acc = new Accounts(
                         rs.getInt("account_id"),
                         rs.getString("username"),
                         rs.getString("password"),
+                        rs.getString("full_name"),
                         rs.getString("email"),
                         rs.getString("phone"),
-                        rs.getString("full_name"),
+                        rs.getInt("role_id"),
                         rs.getString("profile_image"),
-                        rs.getInt("role_id")
+                        rs.getInt("status"),
+                        rs.getTimestamp("created_at")
                 );
                 list.add(acc);
             }
@@ -36,65 +36,68 @@ public class AccountDAO extends DBConnect {
     }
 
     public boolean addAccount(Accounts acc) {
-        String sql = "INSERT INTO accounts (username, password, email, phone, full_name, profile_image, role_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO accounts (username, password, full_name, email, phone, role_id, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, acc.getAccount_name());
             ps.setString(2, acc.getPassword());
-            ps.setString(3, acc.getEmail());
-            ps.setString(4, acc.getPhone());
-            ps.setString(5, acc.getFull_name());
-            ps.setString(6, acc.getProfile_image());
-            ps.setInt(7, acc.getRole_id());
-            int rowsInserted = ps.executeUpdate();
-            return rowsInserted > 0; // true nếu thêm thành công
+            ps.setString(3, acc.getFull_name());
+            ps.setString(4, acc.getEmail());
+            ps.setString(5, acc.getPhone());
+            ps.setInt(6, acc.getRole_id());
+            ps.setString(7, acc.getProfile_image());
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false; // lỗi -> trả về false
         }
+        return false;
     }
-
 
     public boolean deleteAccount(int id) {
         String sql = "DELETE FROM accounts WHERE account_id = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
     }
-
 
     public boolean updateAccount(Accounts acc) {
-        String sql = "UPDATE accounts SET username = ?, password = ?, email = ?, phone = ?, full_name = ?, profile_image = ?, role_id = ? WHERE account_id = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "UPDATE accounts SET username = ?, password = ?, full_name = ?, email = ?, phone = ?, role_id = ?, profile_image = ?, status = ? WHERE account_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, acc.getAccount_name());
             ps.setString(2, acc.getPassword());
-            ps.setString(3, acc.getEmail());
-            ps.setString(4, acc.getPhone());
-            ps.setString(5, acc.getFull_name());
-            ps.setString(6, acc.getProfile_image());
-            ps.setInt(7, acc.getRole_id());
-            ps.setInt(8, acc.getAccount_id());
-
-            int rowsUpdated = ps.executeUpdate();
-            return rowsUpdated > 0; // true nếu có ít nhất 1 row được cập nhật
+            ps.setString(3, acc.getFull_name());
+            ps.setString(4, acc.getEmail());
+            ps.setString(5, acc.getPhone());
+            ps.setInt(6, acc.getRole_id());
+            ps.setString(7, acc.getProfile_image());
+            ps.setInt(8, acc.getStatus());
+            ps.setInt(9, acc.getAccount_id());
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
         }
+        return false;
+    }
+
+    public boolean deactivateAccount(int id) {
+        String sql = "UPDATE accounts SET status = 0 WHERE account_id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
-    // Lấy tài khoản theo email
+
     public Accounts getAccountByEmail(String email) {
         String sql = "SELECT * FROM accounts WHERE email = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -102,11 +105,13 @@ public class AccountDAO extends DBConnect {
                         rs.getInt("account_id"),
                         rs.getString("username"),
                         rs.getString("password"),
+                        rs.getString("full_name"),
                         rs.getString("email"),
                         rs.getString("phone"),
-                        rs.getString("full_name"),
+                        rs.getInt("role_id"),
                         rs.getString("profile_image"),
-                        rs.getInt("role_id")
+                        rs.getInt("status"),
+                        rs.getTimestamp("created_at")
                 );
             }
         } catch (SQLException e) {
@@ -115,13 +120,9 @@ public class AccountDAO extends DBConnect {
         return null;
     }
 
-
-
-    // Lấy tài khoản theo ID
     public Accounts getAccountById(int id) {
         String sql = "SELECT * FROM accounts WHERE account_id = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -129,11 +130,13 @@ public class AccountDAO extends DBConnect {
                         rs.getInt("account_id"),
                         rs.getString("username"),
                         rs.getString("password"),
+                        rs.getString("full_name"),
                         rs.getString("email"),
                         rs.getString("phone"),
-                        rs.getString("full_name"),
+                        rs.getInt("role_id"),
                         rs.getString("profile_image"),
-                        rs.getInt("role_id")
+                        rs.getInt("status"),
+                        rs.getTimestamp("created_at")
                 );
             }
         } catch (SQLException e) {
@@ -144,75 +147,68 @@ public class AccountDAO extends DBConnect {
 
     public Accounts loginAccount(String email, String password) {
         String sql = "SELECT * FROM accounts WHERE email = ?";
-        try {
-            PreparedStatement ps = connection.prepareStatement(sql);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 String hashedPassword = rs.getString("password");
-
-                // Nếu là admin@example.com với mật khẩu hash cố định, vào luôn
-                if ("admin1@gmail.com".equals(email)
-                        && "$2a$12$CwTycUXWue0Thq9StjUM0uJ8r6pWxv99F3nZq6m97Xhnz8z3PQY1e".equals(hashedPassword)) {
-                    return new Accounts(
-                            rs.getInt("account_id"),
-                            rs.getString("username"),
-                            hashedPassword,
-                            rs.getString("email"),
-                            rs.getString("phone"),
-                            rs.getString("full_name"),
-                            rs.getString("profile_image"),
-                            rs.getInt("role_id")
-                    );
-                }
-
-                // Ngược lại, kiểm tra mật khẩu nhập với hash bình thường
                 if (BCrypt.checkpw(password, hashedPassword)) {
                     return new Accounts(
                             rs.getInt("account_id"),
                             rs.getString("username"),
                             hashedPassword,
+                            rs.getString("full_name"),
                             rs.getString("email"),
                             rs.getString("phone"),
-                            rs.getString("full_name"),
+                            rs.getInt("role_id"),
                             rs.getString("profile_image"),
-                            rs.getInt("role_id")
+                            rs.getInt("status"),
+                            rs.getTimestamp("created_at")
                     );
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-
-
-    // Kiểm tra email đã tồn tại hay chưa
     public boolean isEmailDuplicate(String email) {
         String sql = "SELECT 1 FROM accounts WHERE email = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
             ResultSet rs = ps.executeQuery();
-            return rs.next(); // nếu có dòng trả về -> email trùng
+            return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    // Kiểm tra số điện thoại đã tồn tại hay chưa
     public boolean isPhoneDuplicate(String phone) {
         String sql = "SELECT 1 FROM accounts WHERE phone = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, phone);
             ResultSet rs = ps.executeQuery();
-            return rs.next(); // nếu có dòng trả về -> phone trùng
+            return rs.next();
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
 
+    public static void main(String[] args) {
+        AccountDAO dao = new AccountDAO();
+        Accounts acc = new Accounts();
+        acc.setAccount_name("johndoe");
+        acc.setPassword(BCrypt.hashpw("123456", BCrypt.gensalt()));
+        acc.setFull_name("John Doe");
+        acc.setEmail("john@example.com");
+        acc.setPhone("0123456789");
+        acc.setRole_id(2);
+        acc.setProfile_image("default.jpg");
 
+        boolean success = dao.addAccount(acc);
+        System.out.println(success ? "Tạo tài khoản thành công!" : "Tạo tài khoản thất bại.");
+    }
 }

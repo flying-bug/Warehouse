@@ -2,8 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page isELIgnored="false" %>
 
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
 
 <div class="layout-specing">
     <div class="d-md-flex justify-content-between align-items-center mb-3">
@@ -11,23 +10,38 @@
     </div>
 
     <form action="createExportOrder" method="post">
-        <!-- Customer Info -->
+        <!-- Customer Information -->
         <div class="row mb-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label>Customer Name:</label>
                 <input type="text" class="form-control" name="customerName" required>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label>Phone:</label>
                 <input type="text" class="form-control" name="customerPhone" required>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <label>Email:</label>
+                <input type="email" class="form-control" name="customerEmail">
+            </div>
+            <div class="col-md-3">
                 <label>Warehouse:</label>
-                <select class="form-select" name="warehouseId" required>
+                <select class="form-select" name="warehouseId" id="warehouseId" required onchange="updateAvailableQuantities()">
+                    <option value="" disabled selected>-- Select Warehouse --</option>
                     <c:forEach var="wh" items="${warehouseList}">
                         <option value="${wh.warehouseId}">${wh.name}</option>
                     </c:forEach>
                 </select>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Address:</label>
+                <textarea class="form-control" name="customerAddress" rows="2"></textarea>
+            </div>
+            <div class="col-md-6">
+                <label>Customer Note:</label>
+                <textarea class="form-control" name="customerNote" rows="2"></textarea>
             </div>
         </div>
 
@@ -41,26 +55,22 @@
                     <th>Available</th>
                     <th>Quantity</th>
                     <th>Total</th>
-                    <th>
-                        <button type="button" class="btn btn-success btn-sm" onclick="addRow()">+</button>
-                    </th>
+                    <th><button type="button" class="btn btn-success btn-sm" onclick="addRow()">+</button></th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
                     <td>
-                        <select name="productIds" class="form-select product-select" onchange="updateProductInfo(this)">
+                        <select name="productIds[]" class="form-select product-select" onchange="handleProductChange(this)">
                             <option value="" disabled selected>-- Select Product --</option>
-                            <c:forEach var="p" items="${productList}">
-                                <option value="${p.productId}" data-price="${p.salePrice}" data-unit="${p.unit}">
-                                        ${p.name} (${p.productCode})
-                                </option>
+                            <c:forEach var="item" items="${productList}">
+                                <option value="${item.product.productId}" data-price="${item.product.salePrice}" data-code="${item.product.productCode}">${item.product.name} (${item.product.productCode})</option>
                             </c:forEach>
                         </select>
                     </td>
                     <td class="unit-price">0</td>
                     <td class="available">-</td>
-                    <td><input type="number" name="quantities" class="form-control" min="1" value="1" onchange="updateTotal(this)"></td>
+                    <td><input type="number" name="quantities[]" class="form-control" min="1" value="1" onchange="updateTotal(this)"></td>
                     <td class="total">0</td>
                     <td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(this)">-</button></td>
                 </tr>
@@ -68,28 +78,46 @@
             </table>
         </div>
 
-        <!-- Note -->
-        <div class="mb-3">
-            <label>Note:</label>
-            <textarea class="form-control" name="note" rows="3"></textarea>
+        <!-- Order Reason and Note -->
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label>Reason for Export:</label>
+                <input type="text" class="form-control" name="reason">
+            </div>
+            <div class="col-md-6">
+                <label>Order Note:</label>
+                <textarea class="form-control" name="note" rows="3"></textarea>
+            </div>
         </div>
 
         <div class="text-end">
-            <button type="submit" class="btn btn-primary">Submit Order</button>
+            <button type="submit" class="btn btn-primary" onclick="return validateForm()">Submit Order</button>
         </div>
     </form>
 </div>
 
-<!-- Select2 JS -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
+    // Inventory data from server
+    const inventoryData = ${inventoryJson != null ? inventoryJson : '[]'};
+
     function updateProductInfo(select) {
         const row = select.closest('tr');
         const selectedOption = select.options[select.selectedIndex];
         const price = selectedOption?.getAttribute('data-price') || 0;
-        row.querySelector('.unit-price').innerText = price;
-        updateTotal(row.querySelector('input[name="quantities"]'));
+        row.querySelector('.unit-price').innerText = parseFloat(price).toFixed(2);
+
+        // Update available quantity
+        const productId = select.value;
+        const warehouseId = document.getElementById('warehouseId').value;
+        let available = '-';
+        if (productId && warehouseId) {
+            const inventory = inventoryData.find(item => item.product.productId == productId && item.warehouseId == warehouseId);
+            available = inventory ? inventory.inventoryQuantity : 0;
+        }
+        row.querySelector('.available').innerText = available;
+        updateTotal(row.querySelector('input[name="quantities[]"]'));
     }
 
     function updateTotal(input) {
@@ -99,26 +127,23 @@
         row.querySelector('.total').innerText = (price * qty).toFixed(2);
     }
 
-    // ✅ Lấy danh sách sản phẩm đã chọn
     function getSelectedProductIds() {
-        const selectedIds = [];
-        document.querySelectorAll('select[name="productIds"]').forEach(select => {
-            const val = select.value;
-            if (val) selectedIds.push(val);
+        const selected = [];
+        document.querySelectorAll('select[name="productIds[]"]').forEach(s => {
+            if (s.value) selected.push(s.value);
         });
-        return selectedIds;
+        return selected;
     }
 
-    // ✅ Disable option đã chọn ở các dòng khác
     function updateSelectOptions() {
-        const selectedIds = getSelectedProductIds();
-        document.querySelectorAll('select[name="productIds"]').forEach(currentSelect => {
+        const selected = getSelectedProductIds();
+        document.querySelectorAll('select[name="productIds[]"]').forEach(currentSelect => {
             const currentValue = currentSelect.value;
             currentSelect.querySelectorAll('option').forEach(option => {
                 if (option.value === "" || option.value === currentValue) {
                     option.disabled = false;
                 } else {
-                    option.disabled = selectedIds.includes(option.value);
+                    option.disabled = selected.includes(option.value);
                 }
             });
         });
@@ -126,32 +151,57 @@
 
     function handleProductChange(select) {
         const selectedValue = select.value;
-        const selectedIds = getSelectedProductIds();
-
-        // Kiểm tra nếu giá trị vừa chọn đã tồn tại ở dòng khác
         let isDuplicate = false;
-        document.querySelectorAll('select[name="productIds"]').forEach(s => {
+        document.querySelectorAll('select[name="productIds[]"]').forEach(s => {
             if (s !== select && s.value === selectedValue) {
                 isDuplicate = true;
             }
         });
 
         if (isDuplicate) {
-            alert("This product is already selected in another row. Please choose a different product.");
-            select.value = "";  // reset lại select
-            $(select).trigger("change.select2"); // re-trigger để update UI
+            alert("This product is already selected in another row.");
+            select.value = "";
+            $(select).trigger("change.select2");
             updateProductInfo(select);
             updateSelectOptions();
             return;
         }
 
-        // Nếu không bị trùng thì update info
         updateProductInfo(select);
         updateSelectOptions();
     }
 
+    function updateAvailableQuantities() {
+        document.querySelectorAll('select[name="productIds[]"]').forEach(select => {
+            updateProductInfo(select);
+        });
+    }
 
-    // ✅ Select2 kèm xử lý onchange
+    function validateForm() {
+        const warehouseId = document.getElementById('warehouseId').value;
+        if (!warehouseId) {
+            alert("Please select a warehouse.");
+            return false;
+        }
+
+        let valid = true;
+        document.querySelectorAll('tr').forEach(row => {
+            const select = row.querySelector('select[name="productIds[]"]');
+            const qtyInput = row.querySelector('input[name="quantities[]"]');
+            if (select && qtyInput && select.value) {
+                const productId = select.value;
+                const qty = parseInt(qtyInput.value) || 0;
+                const inventory = inventoryData.find(item => item.product.productId == productId && item.warehouseId == warehouseId);
+                const available = inventory ? inventory.inventoryQuantity : 0;
+                if (qty > available) {
+                    alert(`Requested quantity (${qty}) for product ${select.options[select.selectedIndex].text} exceeds available stock (${available}).`);
+                    valid = false;
+                }
+            }
+        });
+        return valid;
+    }
+
     function initializeSelect2() {
         $('.product-select').select2({
             placeholder: "-- Select Product --",
@@ -162,9 +212,37 @@
             });
     }
 
+    function addRow() {
+        const table = document.getElementById('orderTable').querySelector('tbody');
+        const currentRowCount = table.querySelectorAll('tr').length;
+        const totalProductCount = document.querySelector('select[name="productIds[]"]').querySelectorAll('option').length - 1;
 
+        if (currentRowCount >= totalProductCount) {
+            alert("Cannot add more rows as all available products are selected.");
+            return;
+        }
 
-    // ✅ Xóa dòng → cập nhật lại danh sách sản phẩm
+        const firstRow = table.querySelector('tr');
+        const newRow = firstRow.cloneNode(true);
+
+        // Replace Select2
+        const oldSelect = newRow.querySelector('select.product-select');
+        const clonedSelect = oldSelect.cloneNode(true);
+        oldSelect.parentNode.replaceChild(clonedSelect, oldSelect);
+        clonedSelect.classList.add('product-select');
+
+        // Reset values
+        newRow.querySelectorAll('input').forEach(input => input.value = 1);
+        newRow.querySelector('.unit-price').innerText = '0';
+        newRow.querySelector('.available').innerText = '-';
+        newRow.querySelector('.total').innerText = '0';
+        clonedSelect.selectedIndex = 0;
+
+        table.appendChild(newRow);
+        initializeSelect2();
+        updateSelectOptions();
+    }
+
     function removeRow(button) {
         const row = button.closest('tr');
         const table = row.parentNode;
@@ -174,53 +252,9 @@
         }
     }
 
-    // ✅ Gọi khi load trang
     document.addEventListener('DOMContentLoaded', () => {
         initializeSelect2();
         document.querySelectorAll('select.product-select').forEach(updateProductInfo);
         updateSelectOptions();
     });
-
-    function addRow() {
-        const table = document.getElementById('orderTable').querySelector('tbody');
-        const currentRowCount = table.querySelectorAll('tr').length;
-        const totalProductCount = document.querySelector('select[name="productIds"]').querySelectorAll('option:not([disabled])').length;
-
-        if (currentRowCount >= totalProductCount) {
-            alert("You cannot add more rows than available products.");
-            return;
-        }
-
-        const firstRow = table.querySelector('tr');
-        const newRow = firstRow.cloneNode(true);
-
-        // ✅ Gỡ bỏ Select2 DOM cũ nếu có
-        const oldSelect = newRow.querySelector('select.product-select');
-        const clonedSelect = oldSelect.cloneNode(true); // clone lại select sạch
-        oldSelect.parentNode.replaceChild(clonedSelect, oldSelect); // replace
-
-        // ✅ Reset các giá trị trong dòng mới
-        newRow.querySelectorAll('input').forEach(input => input.value = 1);
-        clonedSelect.selectedIndex = 0;
-
-        newRow.querySelector('.unit-price').innerText = '0';
-        newRow.querySelector('.available').innerText = '-';
-        newRow.querySelector('.total').innerText = '0';
-
-        // ✅ Gắn lại class để apply Select2
-        clonedSelect.classList.add('product-select');
-
-        table.appendChild(newRow);
-
-        // ✅ Reinitialize Select2 và update lại option
-        initializeSelect2();
-        updateSelectOptions();
-    }
-
-
 </script>
-
-
-
-
-
