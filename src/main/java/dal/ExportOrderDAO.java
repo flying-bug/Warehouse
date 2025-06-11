@@ -4,24 +4,23 @@ import java.sql.*;
 
 public class ExportOrderDAO extends DBConnect {
 
-    public int createExportOrder(int warehouseId, int accountId, String customerName, String customerPhone, String reason, String note, double totalSalePrice) {
-        String sql = "INSERT INTO export_orders (warehouse_id, account_id, customer_name, customer_phone, reason, note, total_sale_price) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public int createExportOrder(int customerId, int warehouseId, int accountId, String reason, String note, double totalSalePrice) {
+        String sql = "INSERT INTO export_orders (customer_id, warehouse_id, account_id, reason, note, total_sale_price) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, warehouseId);
-            ps.setInt(2, accountId);
-            ps.setString(3, customerName);
-            ps.setString(4, customerPhone); // 🆕 mới thêm
-            ps.setString(5, reason);
-            ps.setString(6, note);
-            ps.setDouble(7, totalSalePrice);
+            ps.setInt(1, customerId);
+            ps.setInt(2, warehouseId);
+            ps.setInt(3, accountId);
+            ps.setString(4, reason);
+            ps.setString(5, note);
+            ps.setDouble(6, totalSalePrice);
 
             int affectedRows = ps.executeUpdate();
 
             if (affectedRows > 0) {
                 try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        return generatedKeys.getInt(1); // export_id
+                        return generatedKeys.getInt(1); // Trả về export_id
                     }
                 }
             }

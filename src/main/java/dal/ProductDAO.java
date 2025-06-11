@@ -416,6 +416,8 @@ public class ProductDAO extends DBConnect {
         );
     }
 
+
+
     private void setProductParameters(PreparedStatement ps, Products product) throws SQLException {
         ps.setString(1, product.getProductCode());
         ps.setString(2, product.getName());
