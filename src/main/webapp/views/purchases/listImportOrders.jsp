@@ -55,7 +55,7 @@
             <select name="selectA" class="form-select">
                 <option value="all" ${selectA == 'all' ? 'selected' : ''}>All</option>
                 <c:forEach var="a" items="${accountsList}">
-                    <c:if test="${a.role_id == 4}">
+                    <c:if test="${a.role_id == 1}">
                         <option value="${a.account_id}" ${String.valueOf(a.account_id) == selectA ? 'selected' : ''}>${a.full_name}</option>
                     </c:if>
                 </c:forEach>

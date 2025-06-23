@@ -174,8 +174,8 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="<%= request.getContextPath() %>/supplierResponses">
-                                    <i class="uil uil-plus-circle me-1"></i> Supplier responses
+                                <a href="<%= request.getContextPath() %>/listRequestForQuotation">
+                                    <i class="uil uil-plus-circle me-1"></i> View List Request For Quotation
                                 </a>
                             </li>
                         </ul>
