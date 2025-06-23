@@ -79,4 +79,10 @@ public class viewExportOrderDetailServlet extends HttpServlet {
         request.setAttribute("PAGE_CONTENT", "/views/sales/viewExportOrderDetail.jsp");
         request.getRequestDispatcher("/views/dashboard.jsp").forward(request, response);
     }
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response); // hoặc xử lý tương tự
+    }
+
 }

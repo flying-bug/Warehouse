@@ -5,6 +5,23 @@
 
 <div class="container-fluid px-4">
 
+    <c:if test="${not empty sessionScope.msg}">
+        <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                ${sessionScope.msg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <c:remove var="msg" scope="session"/>
+    </c:if>
+
+    <c:if test="${not empty sessionScope.error}">
+        <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                ${sessionScope.error}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <c:remove var="error" scope="session"/>
+    </c:if>
+
+
     <!-- HEADER -->
     <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
         <div>
@@ -12,7 +29,17 @@
             <h3 class="fw-bold text-primary">${exportOrder.code}</h3>
         </div>
         <div>
-            <button class="btn btn-primary btn-sm">Send by Email</button>
+            <c:forEach var="c" items="${customersList}">
+                <c:if test="${c.customerId == exportOrder.customerId}">
+                    <form action="sendEmail" method="post">
+                        <input type="hidden" name="email" value="${c.email}"/>
+                        <input type="hidden" name="id" value="${exportOrder.exportId}"/>
+                        <button type="submit" class="btn btn-primary btn-sm">Send by Email</button>
+                    </form>
+                </c:if>
+            </c:forEach>
+
+
             <button class="btn btn-success btn-sm">Confirm</button>
             <button class="btn btn-outline-secondary btn-sm">Preview</button>
             <button class="btn btn-outline-danger btn-sm">Cancel</button>
@@ -140,3 +167,5 @@
         <h5>Total: <strong><fmt:formatNumber value="${grandTotal}" type="number"/> đ</strong></h5>
     </div>
 </div>
+
+
