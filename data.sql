@@ -1,5 +1,6 @@
--- CREATE DATABASE warehouse_clothing;
--- USE warehouse_clothing;
+ 
+--  CREATE DATABASE warehouse_clothing;
+--  USE warehouse_clothing;
 
 
 
