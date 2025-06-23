@@ -64,7 +64,8 @@
 
                 <div class="card login-page bg-white shadow mt-4 rounded border-0">
                     <div class="card-body">
-                        <h4 class="text-center" id="login-title" ><i class="fas fa-warehouse"> Warehouse Clothing</i></h4>
+                        <h4 class="text-center" id="login-title"><i class="fas fa-warehouse"> Warehouse Clothing</i>
+                        </h4>
                         <p class="text-center"><i>Sign in to manage your inventory</i></p>
                         <form action="<%= request.getContextPath() %>/LoginServlet" method="post"
                               class="login-form mt-4" aria-labelledby="login-title">
@@ -126,18 +127,18 @@
                                 <div class="col-lg-12 mt-3 text-center">
                                     <h6 class="text-muted">Or</h6>
                                 </div>
-
-
-
                                 <div class="col-12 mt-3">
                                     <div class="d-grid">
-                                        <a href="#" class="btn btn-soft-primary"><i class="uil uil-google"></i>
-                                            Google</a>
+                                        <a href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8081/why/LoginGoogle&response_type=code&client_id=126173599157-rommu85itdc878aogtrngu2rvhc1l1ee.apps.googleusercontent.com&approval_prompt=force"
+                                           onmouseover="this.style.backgroundColor = '#f1f1f1'; this.style.color = '#0d47a1';"
+                                           onmouseout="this.style.backgroundColor = 'white'; this.style.color = '#4285F4';">
+                                            Đăng nhập bằng Google
+                                        </a>
                                     </div>
                                 </div>
-
                                 <div class="col-12 text-center">
-                                    <p class="mb-0 mt-3"><small class="text-dark me-2">Don't have an account ? Contact with Admin!</small>
+                                    <p class="mb-0 mt-3"><small class="text-dark me-2">Don't have an account ? Contact
+                                        with Admin!</small>
                                 </div>
                             </div>
                         </form>

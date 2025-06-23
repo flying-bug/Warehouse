@@ -1,6 +1,7 @@
 package dal;
 
 import model.Accounts;
+import model.UserGoogle;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
@@ -10,6 +11,33 @@ import java.util.List;
 import java.util.Map;
 
 public class AccountDAO extends DBConnect {
+
+    public boolean checkEmailExists(String email) throws SQLException {
+        String sql = "SELECT * FROM accounts WHERE email = ?";
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, email);
+            try (ResultSet rs = st.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+    public int getIdByEmail(String email) {
+        String sql = "SELECT AccountId FROM Accounts WHERE Email = ?";
+        int userId = -1;
+        try (PreparedStatement st = connection.prepareStatement(sql)) {
+            st.setString(1, email);
+            ResultSet rs = st.executeQuery();
+            if (rs.next()) {
+                userId = rs.getInt("account_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userId;
+    }
+
 
     public List<Accounts> getAllAccounts() {
         List<Accounts> list = new ArrayList<>();
@@ -202,10 +230,10 @@ public class AccountDAO extends DBConnect {
     public static void main(String[] args) {
         AccountDAO dao = new AccountDAO();
         Accounts acc = new Accounts();
-        acc.setAccount_name("johndoe");
+        acc.setAccount_name("Quy");
         acc.setPassword(BCrypt.hashpw("123456", BCrypt.gensalt()));
-        acc.setFull_name("John Doe");
-        acc.setEmail("john@example.com");
+        acc.setFull_name("Quy");
+        acc.setEmail("quyhslc11@gmail.com");
         acc.setPhone("0123456789");
         acc.setRole_id(2);
         acc.setProfile_image("default.jpg");
