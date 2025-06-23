@@ -3,6 +3,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<!-- Font Awesome 5 CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 
 <div class="container-fluid px-4">
@@ -117,106 +119,118 @@
                     <c:choose>
                         <c:when test="${not empty importOrderList}">
                             <c:forEach var="o" items="${importOrderList}">
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" name="selectedIds" value="${o.importId}"/>
-                                    </td>
+                                <c:if test="${o.status != 'Cancel'}">
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" name="selectedIds" value="${o.importId}"/>
+                                        </td>
 
-                                    <td>
-                                        <a href="viewImportOrderDetail?importId=${o.importId}" class="text-primary  text-decoration-underline fw-bold">
-                                                ${o.code}
-                                        </a>
-                                    </td>
+                                        <td>
+                                            <a href="viewImportOrderDetail?importId=${o.importId}"
+                                               class="text-primary  text-decoration-underline fw-bold">
+                                                    ${o.code}
+                                            </a>
+                                        </td>
 
-                                    <td>
-                                        <c:forEach var="s" items="${suppliersList}">
-                                            <c:if test="${s.supplierId == o.supplierId}">${s.name}</c:if>
-                                        </c:forEach>
-                                    </td>
-                                    <td>
-                                        <c:forEach var="w" items="${warehousesList}">
-                                            <c:if test="${w.warehouseId == o.warehouseId}">${w.name}</c:if>
-                                        </c:forEach>
-                                    </td>
-                                    <td class="d-flex align-items-center justify-content-center gap-2">
-                                        <c:forEach var="a" items="${accountsList}">
-                                            <c:if test="${a.account_id == o.accountId}">
-                                                <img src="${a.profile_image}" alt="Avatar" class="rounded-circle"
-                                                     width="30" height="30" style="object-fit: cover;">
-                                                ${a.full_name}
-                                            </c:if>
-                                        </c:forEach>
-                                    </td>
-                                    <td>
-                                        <fmt:formatDate value="${o.importDate}" pattern="yyyy-MM-dd"/>
-                                    </td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${not empty o.activityNote}">
-                                                <c:choose>
-                                                    <c:when test="${o.activityNote == 'Check competitors'}">
-                                                        <i class="fas fa-check-circle text-success" title="Check competitors">${o.activityNote}</i>
-                                                    </c:when>
-                                                    <c:when test="${o.activityNote == 'Check optional products'}">
-                                                        <i class="fas fa-box text-success" title="Check optional products">${o.activityNote}</i>
-                                                    </c:when>
-                                                    <c:when test="${o.activityNote == 'Get approval'}">
-                                                        <i class="fas fa-times-circle text-danger" title="Get approval">${o.activityNote}</i>
-                                                    </c:when>
-                                                    <c:when test="${o.activityNote == 'Send specifications'}">
-                                                        <i class="fas fa-envelope text-primary" title="Send specifications">${o.activityNote}</i>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        ${o.activityNote}
-                                                    </c:otherwise>
-                                                </c:choose>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <i class="fas fa-clock text-muted" title="No activity assigned"></i>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
+                                        <td>
+                                            <c:forEach var="s" items="${suppliersList}">
+                                                <c:if test="${s.supplierId == o.supplierId}">${s.name}</c:if>
+                                            </c:forEach>
+                                        </td>
+                                        <td>
+                                            <c:forEach var="w" items="${warehousesList}">
+                                                <c:if test="${w.warehouseId == o.warehouseId}">${w.name}</c:if>
+                                            </c:forEach>
+                                        </td>
+                                        <td class="d-flex align-items-center justify-content-center gap-2">
+                                            <c:forEach var="a" items="${accountsList}">
+                                                <c:if test="${a.account_id == o.accountId}">
+                                                    <img src="${a.profile_image}" alt="Avatar" class="rounded-circle"
+                                                         width="30" height="30" style="object-fit: cover;">
+                                                    ${a.full_name}
+                                                </c:if>
+                                            </c:forEach>
+                                        </td>
+                                        <td>
+                                            <fmt:formatDate value="${o.importDate}" pattern="yyyy-MM-dd"/>
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${not empty o.activityNote}">
+                                                    <c:choose>
+                                                        <c:when test="${o.activityNote == 'Check competitors'}">
+                                                            <i class="fas fa-check-circle text-success me-1"
+                                                               title="Check competitors"></i>
+                                                            <span class="text-success">${o.activityNote}</span>
+                                                        </c:when>
+                                                        <c:when test="${o.activityNote == 'Check optional products'}">
+                                                            <i class="fas fa-box text-success me-1"
+                                                               title="Check optional products"></i>
+                                                            <span class="text-success">${o.activityNote}</span>
+                                                        </c:when>
+                                                        <c:when test="${o.activityNote == 'Get approval'}">
+                                                            <i class="fas fa-times-circle text-danger me-1"
+                                                               title="Get approval"></i>
+                                                            <span class="text-danger">${o.activityNote}</span>
+                                                        </c:when>
+                                                        <c:when test="${o.activityNote == 'Send specifications'}">
+                                                            <i class="fas fa-envelope text-primary me-1"
+                                                               title="Send specifications"></i>
+                                                            <span class="text-primary">${o.activityNote}</span>
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <i class="fas fa-clock text-muted"
+                                                               title="Other activity"></i>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <i class="fas fa-clock text-muted" title="No activity assigned"></i>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
 
-                                    <td>
-                                            ${o.note}
-                                    </td>
+
+                                        <td>
+                                                ${o.note}
+                                        </td>
 
 
-                                    <td>
-                                        <fmt:formatNumber value="${o.totalCost}" type="number" groupingUsed="true"/> ₫
-                                    </td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${o.status == 'Done'}">
-                                                <span class="badge bg-success">Purchase Order</span>
-                                            </c:when>
-                                            <c:when test="${o.status == 'Cancel'}">
-                                                <span class="badge bg-danger">Cancelled</span>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <span class="badge bg-warning text-dark">RFQ</span>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-<%--                                    <td>--%>
-<%--                                        <a href="viewImportOrderDetail?importId=${o.importId}"--%>
-<%--                                           class="btn btn-sm btn-outline-primary me-1" title="View Detail">--%>
-<%--                                            <i class="bi bi-eye"></i>--%>
-<%--                                        </a>--%>
-<%--                                        <c:if test="${o.status == 'Scheduled'}">--%>
-<%--                                            <a href="confirmImport?action=update&importId=${o.importId}"--%>
-<%--                                               class="btn btn-sm btn-success me-1" title="Mark as Done"--%>
-<%--                                               onclick="return confirm('Mark this order as Done?');">--%>
-<%--                                                <i class="bi bi-check-lg"></i>--%>
-<%--                                            </a>--%>
-<%--                                            <a href="confirmImport?action=delete&importId=${o.importId}"--%>
-<%--                                               class="btn btn-sm btn-danger" title="Cancel Order"--%>
-<%--                                               onclick="return confirm('Cancel this order?');">--%>
-<%--                                                <i class="bi bi-x-lg"></i>--%>
-<%--                                            </a>--%>
-<%--                                        </c:if>--%>
-<%--                                    </td>--%>
-                                </tr>
+                                        <td>
+                                            <fmt:formatNumber value="${o.totalCost}" type="number" groupingUsed="true"/>
+                                            ₫
+                                        </td>
+                                        <td>
+                                            <c:choose>
+                                                <c:when test="${o.status == 'Purchase Order'}">
+                                                    <span class="badge bg-success">Purchase Order</span>
+                                                </c:when>
+                                                <c:when test="${o.status == 'RFQ Sent'}">
+                                                    <span class="badge bg-success">RFQ Sent</span>
+                                                </c:when>
+                                                <c:when test="${o.status == 'Cancel'}">
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge bg-warning text-dark">Draft</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </td>
+                                        <td>
+
+                                                <%--                                            <a href="confirmImport?action=update&importId=${o.importId}"--%>
+                                                <%--                                               class="btn btn-sm btn-success me-1" title="Mark as Done"--%>
+                                                <%--                                               onclick="return confirm('Mark this order as Done?');">--%>
+                                                <%--                                                <i class="bi bi-check-lg"></i>--%>
+                                                <%--                                            </a>--%>
+                                            <a href="confirmImport?action=delete&importId=${o.importId}"
+                                               class="btn btn-sm btn-danger" title="Cancel Order"
+                                               onclick="return confirm('Cancel this request quotation?');">
+                                                <i class="bi bi-x-lg"></i>x
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </c:if>
                             </c:forEach>
                         </c:when>
                         <c:otherwise>

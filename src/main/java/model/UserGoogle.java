@@ -1,6 +1,7 @@
 package model;
 
 import lombok.*;
+
 import java.sql.Date;
 
 @AllArgsConstructor
@@ -17,5 +18,5 @@ public class UserGoogle {
     private String image;
     private Date dob;
     private int roleId;
-    private int Status;
+    private int status;
 }

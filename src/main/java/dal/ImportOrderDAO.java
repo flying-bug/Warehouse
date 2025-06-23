@@ -110,7 +110,7 @@ public class ImportOrderDAO extends DBConnect {
 
     // ✅ Cập nhật trạng thái đơn nhập
     public int updateImportStatusToDone(int importId) {
-        String sql = "UPDATE import_orders SET status = 'Done' WHERE import_id = ?";
+        String sql = "UPDATE import_orders SET status = 'Purchase Order' WHERE import_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, importId);
             return ps.executeUpdate();
@@ -121,7 +121,7 @@ public class ImportOrderDAO extends DBConnect {
     }
 
     public int cancelImportOrder(int importId) {
-        String sql = "UPDATE import_orders SET status = 'Cancel' WHERE import_id = ?";
+        String sql = "UPDATE import_orders SET status = 'Cancelled' WHERE import_id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, importId);
             return ps.executeUpdate();

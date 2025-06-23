@@ -4,100 +4,132 @@
 <%@ page isELIgnored="false" %>
 
 <div class="container-fluid px-4">
-    <h4 class="mt-4 mb-3">Import Order Details - ID: ${importOrder.importId}</h4>
 
-    <div class="card shadow-sm rounded mb-4">
-        <div class="card-body">
-            <p><strong>Supplier:</strong>
-                <c:forEach var="s" items="${suppliersList}">
-                    <c:if test="${s.supplierId == importOrder.supplierId}">
-                        ${s.name}
-                    </c:if>
-                </c:forEach>
-            </p>
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+        <div>
+            <h6 class="text-muted mb-0">Requests for Quotation</h6>
+            <h3 class="fw-bold text-primary">${importOrder.code}</h3>
+        </div>
+        <div>
 
-            <p><strong>Warehouse:</strong>
-                <c:forEach var="w" items="${warehousesList}">
-                    <c:if test="${w.warehouseId == importOrder.warehouseId}">
-                        ${w.name}
-                    </c:if>
-                </c:forEach>
-            </p>
+            <a href="${pageContext.request.contextPath}/viewListImportOrders" class="btn btn-primary btn-sm">Send by
+                Email</a>
 
-            <p><strong>Handled By:</strong>
-                <c:forEach var="a" items="${accountsList}">
-                    <c:if test="${a.account_id == importOrder.accountId}">
-                        ${a.full_name}
-                    </c:if>
-                </c:forEach>
-            </p>
+            <a href="${pageContext.request.contextPath}/viewListImportOrders" class="btn btn-success btn-sm">Confirm
+                Order</a>
 
-            <p><strong>Import Date:</strong> ${importOrder.importDate}</p>
-            <p><strong>Status:</strong> ${importOrder.status}</p>
-            <p><strong>Note:</strong> ${importOrder.note}</p>
+            <a href="${pageContext.request.contextPath}/viewListImportOrders" class="btn btn-outline-secondary btn-sm">Print
+                RFQ</a>
 
-            <!-- Tính tổng tiền -->
-            <c:set var="totalCost" value="0" />
-            <c:forEach var="detail" items="${importDetails}">
-                <c:set var="itemTotal" value="${detail.quantity * detail.costPrice}" />
-                <c:set var="totalCost" value="${totalCost + itemTotal}" />
-            </c:forEach>
-            <p class="fw-bold mb-3">
-                Total Purchase:
-                <fmt:formatNumber value="${totalCost}" type="number" groupingUsed="true" /> VNĐ
-            </p>
+            <a href="${pageContext.request.contextPath}/listRequestForQuotation" class="btn btn-outline-danger btn-sm">Cancel</a>
+
         </div>
     </div>
 
-    <div class="card shadow-sm rounded">
+    <!-- ORDER DETAILS -->
+    <div class="card shadow-sm rounded mb-4">
+        <div class="card-body row">
+            <!-- LEFT SIDE -->
+            <div class="col-md-6">
+                <p><strong>Vendor:</strong>
+                    <c:forEach var="s" items="${suppliersList}">
+                        <c:if test="${s.supplierId == importOrder.supplierId}">
+                            ${s.name}
+                        </c:if>
+                    </c:forEach>
+                </p>
+                <p><strong>Curency:</strong> VND</p>
+                <hr>
+                <p><strong>Buyer:</strong>
+                    <c:forEach var="a" items="${accountsList}">
+                        <c:if test="${a.account_id == importOrder.accountId}">
+                            ${a.full_name}
+                        </c:if>
+                    </c:forEach>
+                </p>
+                <p><strong>Note:</strong> ${importOrder.note}</p>
+            </div>
+
+            <!-- RIGHT SIDE -->
+            <div class="col-md-6">
+                <p><strong>Order Deadline:</strong>
+                    <fmt:formatDate value="${importOrder.orderDeadline}" pattern="dd/MM/yyyy HH:mm"/>
+                </p>
+                <p><strong>Expected Arrival:</strong>
+                    <fmt:formatDate value="${importOrder.expectedArrival}" pattern="dd/MM/yyyy HH:mm"/>
+                </p>
+
+                <p><strong>Deliver To:</strong>
+                    <c:forEach var="w" items="${warehousesList}">
+                        <c:if test="${w.warehouseId == importOrder.warehouseId}">
+                            ${w.name}
+                        </c:if>
+                    </c:forEach>
+                </p>
+
+                <p><strong>Status:</strong> ${importOrder.status}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT TABLE -->
+    <div class="card shadow-sm rounded mb-4">
         <div class="card-body">
-            <h5 class="mb-3">Imported Products</h5>
+            <h5 class="mb-3">Products</h5>
             <div class="table-responsive">
-                <table class="table table-bordered text-center align-middle">
+                <table class="table table-bordered text-center align-middle mb-0">
                     <thead class="table-light">
                     <tr>
                         <th>Product</th>
                         <th>Quantity</th>
-                        <th>Cost Price</th>
-                        <th>Status</th>
+                        <th>Unit Price</th>
+                        <th>Taxes</th>
+                        <th>Amount</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <c:choose>
-                        <c:when test="${not empty importDetails}">
-                            <c:forEach var="detail" items="${importDetails}">
-                                <tr>
-                                    <td>
-                                        <c:forEach var="p" items="${plist}">
-                                            <c:if test="${p.productId == detail.productId}">
-                                                ${p.name}
-                                            </c:if>
-                                        </c:forEach>
-                                    </td>
+                    <c:set var="totalUntaxed" value="0"/>
+                    <c:set var="vatMap" value="${empty vatMap ? {} : vatMap}"/>
 
-                                    <td>${detail.quantity}</td>
-                                    <td>
-                                        <fmt:formatNumber value="${detail.costPrice}" type="number" groupingUsed="true" /> VNĐ
-                                    </td>
-                                    <td>${detail.importStatus}</td>
-                                </tr>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <tr>
-                                <td colspan="4" class="text-danger">No details available for this import order.</td>
-                            </tr>
-                        </c:otherwise>
-                    </c:choose>
+                    <c:forEach var="detail" items="${importDetails}">
+                        <c:set var="productName" value=""/>
+                        <c:forEach var="p" items="${plist}">
+                            <c:if test="${p.productId == detail.productId}">
+                                <c:set var="productName" value="${p.name}"/>
+                            </c:if>
+                        </c:forEach>
+
+                        <c:set var="lineTotal" value="${detail.quantity * detail.costPrice}"/>
+                        <c:set var="totalUntaxed" value="${totalUntaxed + lineTotal}"/>
+
+                        <tr>
+                            <td>${productName}</td>
+                            <td>${detail.quantity}</td>
+                            <td><fmt:formatNumber value="${detail.costPrice}" type="number" groupingUsed="true"/> đ</td>
+                            <td>${detail.taxPercent}%</td>
+                            <td><fmt:formatNumber value="${lineTotal}" type="number" groupingUsed="true"/> đ</td>
+                        </tr>
+                    </c:forEach>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div class="mt-3">
-        <a href="${pageContext.request.contextPath}/viewListImportOrders" class="btn btn-secondary">
-            &larr; Back to Import Orders
-        </a>
+    <!-- TOTALS -->
+    <div class="text-end pe-2">
+        <p>Untaxed Amount: <strong><fmt:formatNumber value="${totalUntaxed}" type="number" groupingUsed="true"/>
+            đ</strong></p>
+
+        <c:set var="grandTotal" value="${totalUntaxed}"/>
+        <c:forEach var="entry" items="${vatMap}">
+            <c:set var="grandTotal" value="${grandTotal + entry.value}"/>
+            <p>VAT ${entry.key}%: <fmt:formatNumber value="${entry.value}" type="number" groupingUsed="true"/> đ</p>
+        </c:forEach>
+
+        <h5>Total: <strong><fmt:formatNumber value="${grandTotal}" type="number" groupingUsed="true"/> đ</strong></h5>
     </div>
+
+
 </div>

@@ -1,7 +1,6 @@
 package dal;
 
 import model.Accounts;
-import model.UserGoogle;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;

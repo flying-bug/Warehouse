@@ -1,3 +1,33 @@
+DROP TRIGGER IF EXISTS trg_insert_inventory_import;
+DROP TRIGGER IF EXISTS trg_insert_inventory_export;
+DROP TRIGGER IF EXISTS trg_insert_inventory_transfer;
+DROP TRIGGER IF EXISTS trg_insert_inventory_adjustment;
+
+DROP TRIGGER IF EXISTS trg_after_update_import_status;
+DROP TRIGGER IF EXISTS trg_after_update_export_status;
+
+DROP TRIGGER IF EXISTS trg_after_update_import_done;
+DROP TRIGGER IF EXISTS trg_after_update_export_done;
+DROP TRIGGER IF EXISTS trg_after_update_stockcheck_done;
+
+DROP TRIGGER IF EXISTS trg_after_export_detail_change;
+DROP TRIGGER IF EXISTS trg_after_export_detail_update;
+DROP TRIGGER IF EXISTS trg_after_export_detail_delete;
+
+DROP TRIGGER IF EXISTS trg_after_import_detail_change;
+DROP TRIGGER IF EXISTS trg_after_import_detail_update;
+DROP TRIGGER IF EXISTS trg_after_import_detail_delete;
+
+DROP TRIGGER IF EXISTS trg_generate_export_code;
+DROP PROCEDURE IF EXISTS update_export_order_total;
+DROP PROCEDURE IF EXISTS update_import_order_total;
+
+
+
+
+
+
+
 DELIMITER $$
 
 CREATE TRIGGER trg_insert_inventory_import
@@ -281,8 +311,7 @@ BEGIN
     THEN
         CALL update_import_order_total(NEW.import_id);
     END IF;
-END;
- $$
+END $$
 
 CREATE TRIGGER trg_after_import_detail_delete
 AFTER DELETE ON import_order_details
@@ -292,6 +321,9 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DROP PROCEDURE IF EXISTS update_import_order_total;
 
 
 
@@ -357,5 +389,7 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
 
 
