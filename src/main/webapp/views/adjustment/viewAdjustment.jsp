@@ -12,7 +12,7 @@
         <input type="date" class="form-control" name="adjustmentDate" placeholder="Date" value="${param.adjustmentDate}">
     </div>
     <div class="col-md-3">
-        <input type="text" class="form-control" name="productName" placeholder="Product Name" value="${param.productName}">
+        <input type="text" class="form-control" name="productCode" placeholder="Product Code" value="${param.productCode}">
     </div>
     <div class="col-md-2">
         <select name="warehouseId" class="form-select">

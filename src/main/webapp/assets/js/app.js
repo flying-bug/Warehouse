@@ -23,12 +23,16 @@
 
  window.onload = function loader() {
     // Preloader
-    setTimeout(() => {
-        document.getElementById('preloader').style.visibility = 'hidden';
-        document.getElementById('preloader').style.opacity = '0';
-    }, 350);
+     setTimeout(() => {
+         const preloader = document.getElementById('preloader');
+         if (preloader) {
+             preloader.style.visibility = 'hidden';
+             preloader.style.opacity = '0';
+         }
+     }, 350);
 
-    // Menus
+
+     // Menus
     activateMenu();
     activateSidebarMenu();
 }

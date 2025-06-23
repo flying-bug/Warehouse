@@ -5,7 +5,9 @@ import model.Products;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class ProductDAO extends DBConnect {
@@ -415,6 +417,22 @@ public class ProductDAO extends DBConnect {
                 rs.getInt("min_stock_level")
         );
     }
+
+    public Map<Integer, Products> getAllProductsMap() {
+        Map<Integer, Products> productMap = new HashMap<>();
+        String sql = "SELECT * FROM products";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Products p = mapResultSetToProduct(rs);
+                productMap.put(p.getProductId(), p);
+            }
+        } catch (SQLException e) {
+            LOGGER.severe("Error fetching product map: " + e.getMessage());
+        }
+        return productMap;
+    }
+
 
 
 

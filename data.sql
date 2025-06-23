@@ -1,6 +1,8 @@
 -- CREATE DATABASE warehouse_clothing;
 -- USE warehouse_clothing;
 
+
+
 -- ===================
 -- ROLES & ACCOUNTS
 -- ===================
@@ -116,9 +118,22 @@ CREATE TABLE import_orders (
     warehouse_id INT,
     account_id INT,
     import_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    -- ✅ Trường bổ sung theo nghiệp vụ mua hàng:
+    code VARCHAR(50) UNIQUE,                                   -- Mã đơn nhập (P00026)
+    order_deadline DATETIME,                                   -- Hạn yêu cầu gửi báo giá
+    expected_arrival DATETIME,                                 -- Ngày dự kiến nhận hàng
+    confirm_date DATETIME,                                     -- Ngày nhà cung cấp xác nhận đơn
+    invoice_status VARCHAR(20) DEFAULT 'No'                    -- Trạng thái hóa đơn
+        CHECK (invoice_status IN ('No', 'Partial', 'Invoiced')),
+    activity_note VARCHAR(255),                                -- Ghi chú nội bộ
+
     note TEXT,
-    total_cost DECIMAL(12,2),
-    status VARCHAR(20) DEFAULT 'Pending',
+    total_cost DECIMAL(12,2) DEFAULT 0.00,
+
+    status VARCHAR(20) DEFAULT 'Draft'                         -- Trạng thái đơn mua
+        CHECK (status IN ('Draft', 'RFQ Sent', 'Purchase Order', 'Received', 'Cancelled')),
+
     FOREIGN KEY (supplier_id) REFERENCES suppliers(supplier_id)
         ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (warehouse_id) REFERENCES warehouses(warehouse_id)
@@ -127,27 +142,58 @@ CREATE TABLE import_orders (
         ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+
 CREATE TABLE import_order_details (
     id INT AUTO_INCREMENT PRIMARY KEY,
     import_id INT,
     product_id INT,
     quantity INT,
     cost_price DECIMAL(12,2),
+
+    -- ✅ Bổ sung nghiệp vụ
+    tax_percent DECIMAL(5,2) DEFAULT 0.00,             -- Thuế theo %
+
+    quantity_received INT DEFAULT 0,                   -- Số lượng đã nhận
+    quantity_invoiced INT DEFAULT 0,                   -- Số lượng đã lập hóa đơn
+
+    import_status VARCHAR(20) DEFAULT 'Scheduled'
+        CHECK (import_status IN ('Scheduled', 'Done', 'Cancel')),
+
     FOREIGN KEY (import_id) REFERENCES import_orders(import_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
         ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
+
 CREATE TABLE export_orders (
     export_id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT,
     warehouse_id INT,
     account_id INT,
-    export_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    export_date DATETIME DEFAULT CURRENT_TIMESTAMP,           -- Ngày xuất đơn
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,            -- Ngày tạo đơn
+
+    -- ➕ Trường bổ sung hữu ích
+    code VARCHAR(50) UNIQUE,                                  -- Mã đơn (ví dụ: S00037)
+    confirm_date DATE,                                        -- Ngày khách hàng xác nhận
+
+    expiration_date DATE,                                     -- Ngày hết hạn báo giá
+    due_date DATE,                                            -- Hạn thanh toán
+
+    total_amount DECIMAL(12,2) DEFAULT 0.00,                  -- Tổng tiền đơn hàng
+
+    invoice_status VARCHAR(20) DEFAULT 'No'                   -- Trạng thái hóa đơn
+        CHECK (invoice_status IN ('No', 'Partial', 'Invoiced')),
+
     reason VARCHAR(255),
     note TEXT,
-    total_sale_price DECIMAL(12,2),
+    activity_note VARCHAR(255) DEFAULT NULL,
+    export_status VARCHAR(20) DEFAULT 'Scheduled'
+        CHECK (export_status IN ('Scheduled', 'Done', 'Cancel')),
+
+    -- Liên kết khóa ngoại
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
         ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (warehouse_id) REFERENCES warehouses(warehouse_id)
@@ -156,12 +202,18 @@ CREATE TABLE export_orders (
         ON DELETE SET NULL ON UPDATE CASCADE
 );
 
+
 CREATE TABLE export_order_details (
     id INT AUTO_INCREMENT PRIMARY KEY,
     export_id INT,
     product_id INT,
     quantity INT,
     sale_price DECIMAL(12,2),
+    tax_percent DECIMAL(5,2), -- ✅ Thêm: Thuế VAT từng sản phẩm
+    quantity_delivered INT DEFAULT 0, -- ✅ Thêm: Theo dõi số lượng đã giao
+    quantity_invoiced INT DEFAULT 0,  -- ✅ Thêm: Theo dõi số lượng đã xuất hóa đơn
+    
+    export_status VARCHAR(20) DEFAULT 'Scheduled' CHECK (export_status IN ('Scheduled', 'Done', 'Cancel')),
     FOREIGN KEY (export_id) REFERENCES export_orders(export_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(product_id)
@@ -194,7 +246,7 @@ CREATE TABLE stock_checks (
     account_id INT,
     check_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     end_date DATETIME,
-    status VARCHAR(20) DEFAULT 'Scheduled',
+    status VARCHAR(20) DEFAULT 'Scheduled' CHECK (status IN ('Scheduled', 'Done', 'Cancel')),
     note TEXT,
     FOREIGN KEY (warehouse_id) REFERENCES warehouses(warehouse_id)
         ON DELETE SET NULL ON UPDATE CASCADE,

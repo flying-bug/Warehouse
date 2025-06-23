@@ -1,66 +1,92 @@
--- =======================================
--- INSERT DATA FOR warehouse_clothing DB
--- =======================================
+-- Insert roles
+INSERT INTO roles (role_id, role_name, description) VALUES (1, 'Admin', 'Quản trị hệ thống');
+INSERT INTO roles (role_id, role_name, description) VALUES (2, 'Store Manager', 'Quản lý lưu trữ');
+INSERT INTO roles (role_id, role_name, description) VALUES (3, 'Warehouse Staff', 'Nhân viên kho');
+INSERT INTO roles (role_id, role_name, description) VALUES (4, 'Purchasing Staff', 'Nhân viên mua hàng');
+INSERT INTO roles (role_id, role_name, description) VALUES (5, 'Sales Staff', 'Nhân viên bán hàng');
 
--- Rolesaccountsadjustments
-INSERT INTO roles (role_name, description) VALUES
-('Admin', 'Quản trị viên hệ thống với toàn quyền truy cập và quản lý.'),
-('Store Manager', 'Quản lý cửa hàng, có quyền xem báo cáo, quản lý nhân viên và một số hoạt động kho.'),
-('Warehouse Staff', 'Nhân viên kho, chịu trách nhiệm nhập xuất, kiểm kê hàng hóa.'),
-('Purchasing Staff', 'Nhân viên mua hàng, phụ trách đặt hàng từ nhà cung cấp.'),
-('Sales Staff', 'Nhân viên bán hàng, phụ trách tạo đơn xuất và quản lý khách hàng.');
+-- Insert accounts
+INSERT INTO accounts (account_id, username, password, full_name, email, phone, role_id, profile_image) VALUES (1, 'admin', 'hashed_password', 'Nguyễn Văn A', 'admin@example.com', '0909123456', 1, 'admin.png');
+INSERT INTO accounts (account_id, username, password, full_name, email, phone, role_id, profile_image) VALUES (2, 'manager1', 'hashed_password', 'Trần Thị B', 'manager@example.com', '0912345678', 2, 'manager.png');
+INSERT INTO accounts (account_id, username, password, full_name, email, phone, role_id, profile_image) VALUES (3, 'sales1', 'hashed_password', 'Lê Văn C', 'sales@example.com', '0934567890', 5, 'sales.png');
 
--- Accounts
-INSERT INTO accounts (username, password, full_name, email, phone, role_id, profile_image, status, created_at) VALUES
-('admin', 'hashed_password', 'Nguyễn Văn Quang', 'admin@warehouse.vn', '0909000001', 1, NULL, 1, NOW()),
-('store_manager', 'hashed_password', 'Phạm Thị Hà', 'ha@store.vn', '0909000005', 2, NULL, 1, NOW()),
-('nhanvienkho_hn', 'hashed_password', 'Trần Thị Mai', 'mai@warehouse.vn', '0909000002', 3, NULL, 1, NOW()),
-('nhanviennhap', 'hashed_password', 'Lê Hoàng', 'hoang@warehouse.vn', '0909000003', 4, NULL, 1, NOW()),
-('nhanvienban', 'hashed_password', 'Ngô Văn Tâm', 'tam@warehouse.vn', '0909000004', 5, NULL, 1, NOW());
+-- Insert suppliers
+INSERT INTO suppliers (supplier_id, name, phone, email, address, tax_id, contact_person, notes) VALUES (1, 'Nhà cung cấp A', '0987654321', 'supA@example.com', '123 Trần Hưng Đạo', 'MST12345', 'Nguyễn Thị D', 'Giao hàng đúng hẹn');
 
--- Suppliers
-INSERT INTO suppliers (name, phone, email, address, tax_id, contact_person, notes, status) VALUES
-('Dệt May Việt Tiến', '02838245678', 'lienhe@viettien.com.vn', '7 Lê Minh Xuân, Tân Bình, TP.HCM', '0301234567', 'Nguyễn Thị Hoa', 'Chuyên cung cấp sơ mi', 1),
-('May 10', '02438624590', 'info@may10.vn', '765 Nguyễn Văn Cừ, Long Biên, Hà Nội', '0102345678', 'Trần Hữu Nam', 'Đồng phục văn phòng', 1);
+-- Insert products
+INSERT INTO products (product_id, product_code, name, description, size, color, material, unit, cost_price, sale_price, image) VALUES (1, 'SP001', 'Áo thun', 'Áo thun nam', 'L', 'Đỏ', 'Cotton', 'Cái', 50000, 70000, 'aothun.jpg');
+INSERT INTO products (product_id, product_code, name, description, size, color, material, unit, cost_price, sale_price, image) VALUES (2, 'SP002', 'Quần jean', 'Quần jean nữ', 'M', 'Xanh', 'Jean', 'Cái', 120000, 150000, 'quanjean.jpg');
 
--- Products
-INSERT INTO products (product_code, name, description, size, color, material, unit, cost_price, sale_price, status, image, min_stock_level) VALUES
-('SM001', 'Sơ mi trắng nam', 'Áo sơ mi trắng công sở, cotton chống nhăn', 'L', 'Trắng', 'Cotton', 'Cái', 180000, 250000, 1, 'https://example.com/somi.jpg', 20),
-('QJ001', 'Quần jean nam', 'Quần jean nam xanh đậm', '32', 'Xanh đậm', 'Denim', 'Cái', 220000, 350000, 1, 'https://example.com/jean.jpg', 15),
-('AK001', 'Áo khoác kaki nữ', 'Áo khoác form rộng, có mũ', 'M', 'Be', 'Kaki', 'Cái', 260000, 390000, 1, 'https://example.com/khoac.jpg', 10);
+-- Insert product_suppliers
+INSERT INTO product_suppliers (product_id, supplier_id, delivery_duration, estimated_price, policies) VALUES (1, 1, 3, 52000, 'Giao hàng trong 3 ngày');
+INSERT INTO product_suppliers (product_id, supplier_id, delivery_duration, estimated_price, policies) VALUES (2, 1, 5, 125000, 'Giao hàng trong 5 ngày');
 
--- Product-Suppliers
-INSERT INTO product_suppliers (product_id, supplier_id, delivery_duration, estimated_price, policies) VALUES
-(1, 1, 3, 180000, 'Giao hàng sau 3 ngày'),
-(2, 2, 5, 220000, 'Bảo hành đường may 6 tháng'),
-(3, 2, 4, 260000, 'Giao hàng nội thành miễn phí');
+-- Insert warehouses
+INSERT INTO warehouses (warehouse_id, name, location, manager_account_id) VALUES (1, 'Kho Hà Nội', 'Số 1 Nguyễn Trãi', 2);
+INSERT INTO warehouses (warehouse_id, name, location, manager_account_id) VALUES (2, 'Kho HCM', 'Số 99 Trường Chinh', 2);
 
--- Warehouses
-INSERT INTO warehouses (name, location, manager_account_id, status) VALUES
-('Kho Hà Nội', 'KCN Bắc Thăng Long, Đông Anh, Hà Nội', 2, 1),
-('Kho TP.HCM', 'KCN Tân Tạo, Bình Tân, TP.HCM', 2, 1);
+-- Insert inventory
+INSERT INTO inventory (product_id, warehouse_id, quantity) VALUES (1, 1, 100);
+INSERT INTO inventory (product_id, warehouse_id, quantity) VALUES (2, 2, 50);
 
--- Inventory
-INSERT INTO inventory (product_id, warehouse_id, quantity) VALUES
-(1, 1, 100),
-(2, 1, 70),
-(3, 2, 50);
+-- Insert customers
+INSERT INTO customers (customer_id, name, phone, email, address, note) VALUES (1, 'Công ty ABC', '0988888888', 'abc@company.com', '12 Lê Lợi, Đà Nẵng', 'Khách hàng lâu năm');
+INSERT INTO customers (customer_id, name, phone, email, address, note) VALUES (2, 'Cửa hàng XYZ', '0977777777', 'xyz@store.com', '45 Hai Bà Trưng, Huế', 'Mới hợp tác');
 
--- Customers
-INSERT INTO customers (name, phone, email, address, note, status) VALUES
-('Cửa hàng An Fashion', '0934567890', 'an@fashion.vn', '123 Kim Mã, Ba Đình, Hà Nội', 'Khách sỉ ưu thích sơ mi', 1),
-('Shop Gấu Boutique', '0908765432', 'gau@boutique.vn', '205 Lý Tự Trọng, Quận 1, TP.HCM', 'Chuyên hàng nữ', 1);
+-- ===================
+-- IMPORT ORDERS
+-- ===================
+INSERT INTO import_orders (supplier_id, warehouse_id, account_id, code, order_deadline, expected_arrival, confirm_date, invoice_status, activity_note, note, total_cost, status)
+VALUES
+(1, 1, 1, 'P00001', '2025-06-10', '2025-06-12', '2025-06-09', 'No', 'Chờ xác nhận từ NCC', 'Nhập hàng đợt 1', 2000000, 'RFQ Sent');
 
--- Import Orders
-INSERT INTO import_orders (supplier_id, warehouse_id, account_id, import_date, note, total_cost, status) VALUES
-(1, 1, 4, '2025-06-10 08:00:00', 'Nhập sơ mi từ Việt Tiến', 9000000, 'Completed');
+-- IMPORT ORDER DETAILS
+INSERT INTO import_order_details (import_id, product_id, quantity, cost_price, tax_percent, quantity_received, quantity_invoiced)
+VALUES
+(1, 1, 50, 20000, 10.00, 0, 0),
+(1, 2, 100, 15000, 5.00, 0, 0);
 
-INSERT INTO import_order_details (import_id, product_id, quantity, cost_price) VALUES
-(1, 1, 50, 180000);
+-- ===================
+-- EXPORT ORDERS
+-- ===================
+INSERT INTO export_orders (customer_id, warehouse_id, account_id, code, confirm_date, expiration_date, due_date, total_amount, invoice_status, reason, note, activity_note, export_status)
+VALUES
+(1, 1, 1, 'S00001', '2025-06-08', '2025-06-13', '2025-06-18', 3500000, 'Partial', 'Giao hàng theo yêu cầu', 'Khách lấy sớm', 'Khách hàng thân thiết', 'Scheduled');
 
--- Export Orders
-INSERT INTO export_orders (customer_id, warehouse_id, account_id, export_date, reason, note, total_sale_price) VALUES
-(1, 1, 5, '2025-06-11 10:30:00', 'Bán buôn cho khách sỉ', 'Giao hàng bằng GHTK', 5000000);
+-- EXPORT ORDER DETAILS
+INSERT INTO export_order_details (export_id, product_id, quantity, sale_price, tax_percent, quantity_delivered, quantity_invoiced)
+VALUES
+(1, 1, 20, 50000, 10.00, 10, 5),
+(1, 2, 30, 40000, 8.00, 20, 15);
 
-INSERT INTO export_order_details (export_id, product_id, quantity, sale_price) VALUES
-(1, 1, 20, 250000);
+-- ===================
+-- ADJUSTMENTS
+-- ===================
+INSERT INTO adjustments (product_id, warehouse_id, account_id, quantity_change, old_quantity, reason)
+VALUES
+(1, 1, 1, 10, 40, 'Điều chỉnh sai lệch kiểm kho'),
+(2, 1, 1, -5, 80, 'Hàng hỏng trong kho');
+
+-- ===================
+-- STOCK CHECKS
+-- ===================
+INSERT INTO stock_checks (warehouse_id, account_id, check_date, end_date, status, note)
+VALUES
+(1, 1, '2025-06-01', '2025-06-02', 'Done', 'Kiểm kê định kỳ tháng 6');
+
+INSERT INTO stock_check_details (check_id, product_id, actual_quantity, system_quantity)
+VALUES
+(1, 1, 45, 50),
+(1, 2, 95, 100);
+
+-- ===================
+-- TRANSFERS
+-- ===================
+INSERT INTO transfer_orders (source_warehouse_id, destination_warehouse_id, account_id, status, note)
+VALUES
+(1, 2, 1, 'Pending', 'Chuyển hàng bổ sung kho 2');
+
+INSERT INTO transfer_order_details (transfer_id, product_id, quantity, note)
+VALUES
+(1, 1, 10, 'Chuyển hàng size M'),
+(1, 2, 20, 'Chuyển hàng size L');

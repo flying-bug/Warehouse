@@ -8,8 +8,6 @@
     <meta charset="utf-8"/>
     <title>Warehouse Clothing - Dashboard</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Warehouse Clothing Management Dashboard with Doctris Theme"/>
-    <meta name="author" content="Anh Bo & Shreethemes"/>
 
     <link rel="shortcut icon" href="<%= request.getContextPath() %>/assets/images/favicon.ico.png">
     <link href="<%= request.getContextPath() %>/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
@@ -90,8 +88,17 @@
                     </a>
                     <div class="sidebar-submenu">
                         <ul>
+                            <li>
+                                <form action="<%= request.getContextPath() %>/viewProductSuppliers" method="post">
+                                    <button type="submit" class="btn btn-link p-0 text-start">
+                                        <i class="uil uil-list-ul me-1"></i> View Supplier List
+                                    </button>
+                                </form>
+                            </li>
+
                             <li><a href="<%= request.getContextPath() %>/viewListSuppliers"><i class="uil uil-list-ul me-1"></i> List of Suppliers</a></li>
                             <li><a href="<%= request.getContextPath() %>/addSupplier"><i class="uil uil-plus-circle me-1"></i> Add Supplier</a></li>
+                            <li><a href="<%= request.getContextPath() %>/productSupplier"><i class="uil uil-plus-circle me-1"></i> Product - Supplier</a></li>
                         </ul>
                     </div>
                 </li>
@@ -101,10 +108,12 @@
                     </a>
                     <div class="sidebar-submenu">
                         <ul>
-                            <li><a href="<%= request.getContextPath() %>/#"><i class="uil uil-plus-circle me-1"></i> List of Export Request Products</a></li>
-                            <li><a href="<%= request.getContextPath() %>/#"><i class="uil uil-plus-circle me-1"></i>Product Overview</a></li>
+                            <li><a href="<%= request.getContextPath() %>/viewListExportProducts"><i class="uil uil-plus-circle me-1"></i> List of Export Request Products</a></li>
+                            <li><a href="<%= request.getContextPath() %>/viewListImportOrders"><i class="uil uil-plus-circle me-1"></i> List of Import Request Products</a></li>
+                            <li><a href="<%= request.getContextPath() %>/views/warehouses/stockCheck.jsp"><i class="uil uil-plus-circle me-1"></i>Product Overview</a></li>
                             <li><a href="<%= request.getContextPath() %>/viewListWarehouses"><i class="uil uil-list-ul me-1"></i> List of Warehouses</a></li>
                             <li><a href="<%= request.getContextPath() %>/addWarehouse"><i class="uil uil-plus-circle me-1"></i> Add Warehouse</a></li>
+
                         </ul>
                     </div>
                 </li>
@@ -116,6 +125,7 @@
                         <ul>
                             <li><a href="<%= request.getContextPath() %>/viewListInventory"><i class="uil uil-list-ul me-1"></i> List of Inventory</a></li>
                             <li><a href="<%= request.getContextPath() %>/viewAdjustment"><i class="uil uil-plus-circle me-1"></i>Adjustments</a></li>
+                            <li><a href="<%= request.getContextPath() %>/lowInventory"><i class="uil uil-plus-circle me-1"></i>Lower Product</a></li>
                         </ul>
                     </div>
                 </li>
@@ -149,12 +159,17 @@
                     <div class="sidebar-submenu">
                         <ul>
                             <li>
-                                <a href="<%= request.getContextPath() %>/viewListProductsToBuy">
+                                <a href="<%= request.getContextPath() %>/viewProductSuppliers">
+                                    <i class="uil uil-list-ul me-1"></i> View Supplier List
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<%= request.getContextPath() %>/lowInventory">
                                     <i class="uil uil-list-ul me-1"></i> View List Products To Buy
                                 </a>
                             </li>
                             <li>
-                                <a href="<%= request.getContextPath() %>/buyProduct">
+                                <a href="<%= request.getContextPath() %>/selectSupplier">
                                     <i class="uil uil-plus-circle me-1"></i> Buy Product
                                 </a>
                             </li>
@@ -163,6 +178,19 @@
                                     <i class="uil uil-plus-circle me-1"></i> Supplier responses
                                 </a>
                             </li>
+                        </ul>
+                    </div>
+                </li>
+
+
+                <li class="sidebar-dropdown">
+                    <a href="javascript:void(0)">
+                        <i class="uil uil-box me-2 d-inline-block"></i> Quick Stock
+                    </a>
+                    <div class="sidebar-submenu">
+                        <ul>
+                            <li><a href="<%= request.getContextPath() %>/stockCheck"><i class="uil uil-plus-circle me-1"></i> Stock Check</a></li>
+                            <li><a href="<%= request.getContextPath() %>/listStockChecks"><i class="uil uil-plus-circle me-1"></i>List Stock Check</a></li>
                         </ul>
                     </div>
                 </li>

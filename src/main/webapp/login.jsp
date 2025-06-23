@@ -7,7 +7,7 @@
     <title>Login - Warehouse Clothing</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Warehouse Clothing Login Page"/>
-    <meta name="author" content="Anh Bo adapt from Shreethemes"/>
+    <meta name="author" content="Anh adapt from Shreethemes"/>
     <link rel="shortcut icon" href="<%= request.getContextPath() %>/assets/images/favicon.ico.png">
     <link href="<%= request.getContextPath() %>/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="<%= request.getContextPath() %>/assets/css/materialdesignicons.min.css" rel="stylesheet"
@@ -71,14 +71,14 @@
 
                             <% if ("success".equals(request.getParameter("logout"))) { %>
                             <div class="alert alert-success" role="alert">
-                                {/* Thay icon nếu muốn, ví dụ: <i class="uil uil-check-circle"></i> */}
-                                You have successfully logged out.
-                            </div>
+                                <i class="uil uil-check-circle"></i>
+
+                            </div
                             <% } %>
 
                             <% if (request.getAttribute("error") != null) { %>
                             <div class="alert alert-danger" role="alert">
-                                {/* Thay icon nếu muốn, ví dụ: <i class="uil uil-exclamation-octagon"></i> */}
+                                <i class="uil uil-exclamation-octagon"></i>
                                 <%= request.getAttribute("error") %>
                             </div>
                             <% } %>

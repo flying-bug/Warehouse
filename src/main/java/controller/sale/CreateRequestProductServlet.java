@@ -7,18 +7,18 @@ import dal.ExportOrderDetailDAO;
 import dal.InventoryDAO;
 import dal.ProductDAO;
 import dal.WarehouseDAO;
-import model.Customers;
-import model.Inventory;
-import model.Products;
-import model.Warehouses;
+import model.*;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @WebServlet(name = "CreateRequestProductServlet", urlPatterns = {"/createRequestProduct"})
@@ -29,18 +29,36 @@ public class CreateRequestProductServlet extends HttpServlet {
 
     // Lớp để ánh xạ dữ liệu inventoryJson
     public static class InventoryWithProduct {
-        private Products product;
+        private int productId;
+        private String productCode;
+        private String name;
+        private double salePrice;
         private int warehouseId;
         private int inventoryQuantity;
 
         public InventoryWithProduct(Products product, int warehouseId, int inventoryQuantity) {
-            this.product = product;
+            this.productId = product.getProductId();
+            this.productCode = product.getProductCode();
+            this.name = product.getName();
+            this.salePrice = product.getSalePrice().doubleValue();
             this.warehouseId = warehouseId;
             this.inventoryQuantity = inventoryQuantity;
         }
 
-        public Products getProduct() {
-            return product;
+        public int getProductId() {
+            return productId;
+        }
+
+        public String getProductCode() {
+            return productCode;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public double getSalePrice() {
+            return salePrice;
         }
 
         public int getWarehouseId() {
@@ -50,7 +68,21 @@ public class CreateRequestProductServlet extends HttpServlet {
         public int getInventoryQuantity() {
             return inventoryQuantity;
         }
+
+        @Override
+        public String toString() {
+            return "InventoryWithProduct{" +
+                    "productId=" + productId +
+                    ", productCode='" + productCode + '\'' +
+                    ", name='" + name + '\'' +
+                    ", salePrice=" + salePrice +
+                    ", warehouseId=" + warehouseId +
+                    ", inventoryQuantity=" + inventoryQuantity +
+                    '}';
+        }
+
     }
+
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -65,27 +97,12 @@ public class CreateRequestProductServlet extends HttpServlet {
         request.setAttribute("warehouseList", warehouseList);
 
         // Lấy danh sách tồn kho và sản phẩm
-        List<Inventory> inventoryList = inventoryDAO.getAllInventory();
         List<Products> productList = productDAO.getAllProducts();
+        request.setAttribute("productList", productList);
 
-        // Tạo inventoryJson
-        List<InventoryWithProduct> inventoryWithProductList = new ArrayList<>();
-        for (Inventory inventory : inventoryList) {
-            Products product = productList.stream()
-                    .filter(p -> p.getProductId() == inventory.getProductId())
-                    .findFirst()
-                    .orElse(null);
-            if (product != null && product.getStatus() == 1) { // Chỉ lấy sản phẩm hoạt động
-                inventoryWithProductList.add(new InventoryWithProduct(
-                        product,
-                        inventory.getWarehouseId(),
-                        inventory.getQuantity()
-                ));
-            }
-        }
 
-        String inventoryJson = new Gson().toJson(inventoryWithProductList);
-        request.setAttribute("inventoryJson", inventoryJson);
+        System.out.println("Product List: " + productList);
+
 
         request.setAttribute("PAGE_CONTENT", CREATE_EXPORT_ORDER_CONTENT);
         request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
@@ -104,29 +121,8 @@ public class CreateRequestProductServlet extends HttpServlet {
         ExportOrderDAO exportDAO = new ExportOrderDAO();
         ExportOrderDetailDAO detailDAO = new ExportOrderDetailDAO();
 
-        // Lấy lại danh sách kho và tồn kho để hiển thị nếu có lỗi
-        List<Warehouses> warehouseList = warehouseDAO.getAllWarehouses();
-        request.setAttribute("warehouseList", warehouseList);
-        List<Inventory> inventoryList = inventoryDAO.getAllInventory();
-        List<Products> productList = productDAO.getAllProducts();
-        List<InventoryWithProduct> inventoryWithProductList = new ArrayList<>();
-        for (Inventory inventory : inventoryList) {
-            Products product = productList.stream()
-                    .filter(p -> p.getProductId() == inventory.getProductId())
-                    .findFirst()
-                    .orElse(null);
-            if (product != null && product.getStatus() == 1) {
-                inventoryWithProductList.add(new InventoryWithProduct(
-                        product,
-                        inventory.getWarehouseId(),
-                        inventory.getQuantity()
-                ));
-            }
-        }
-        request.setAttribute("inventoryJson", new Gson().toJson(inventoryWithProductList));
-
         try {
-            // Lấy thông tin khách hàng
+            // Lấy thông tin khách hàng từ form
             String customerName = request.getParameter("customerName");
             String customerPhone = request.getParameter("customerPhone");
             String customerEmail = request.getParameter("customerEmail");
@@ -140,7 +136,7 @@ public class CreateRequestProductServlet extends HttpServlet {
             String reason = request.getParameter("reason");
             String note = request.getParameter("note");
 
-            // Kiểm tra dữ liệu đầu vào
+            // Kiểm tra dữ liệu
             if (warehouseIds == null || productIds == null || quantities == null ||
                     warehouseIds.length != productIds.length || productIds.length != quantities.length) {
                 request.setAttribute("fail", "Dữ liệu sản phẩm không hợp lệ.");
@@ -149,47 +145,83 @@ public class CreateRequestProductServlet extends HttpServlet {
                 return;
             }
 
-            // Kiểm tra tài khoản
+            // Kiểm tra tài khoản đăng nhập
             HttpSession session = request.getSession();
-            Integer accountId = (Integer) session.getAttribute("id");
-            if (accountId == null) {
+            Accounts account = (Accounts) session.getAttribute("account");
+            if (account == null) {
                 response.sendRedirect("login.jsp");
                 return;
             }
 
-            // Lưu thông tin khách hàng
-            Customers customer = new Customers();
-            customer.setName(customerName);
-            customer.setPhone(customerPhone);
-            customer.setEmail(customerEmail);
-            customer.setAddress(customerAddress);
-            customer.setNote(customerNote);
-            customer.setStatus(1);
-            int customerId = customerDAO.addCustomer(customer);
-            if (customerId <= 0) {
-                request.setAttribute("fail", "Không thể tạo thông tin khách hàng.");
-                request.setAttribute("PAGE_CONTENT", CREATE_EXPORT_ORDER_CONTENT);
-                request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
-                return;
+            // Kiểm tra khách hàng đã tồn tại theo SĐT
+            Customers customer = customerDAO.getCustomerByPhone(customerPhone);
+            int customerId;
+
+            if (customer != null) {
+                customerId = customer.getCustomerId(); // Dùng lại
+            } else {
+                customer = new Customers();
+                customer.setName(customerName);
+                customer.setPhone(customerPhone);
+                customer.setEmail(customerEmail);
+                customer.setAddress(customerAddress);
+                customer.setNote(customerNote);
+                customer.setStatus(1);
+                customerId = customerDAO.addCustomer(customer); //để add databae
+                if (customerId <= 0) {
+                    request.setAttribute("fail", "Không thể tạo thông tin khách hàng.");
+                    request.setAttribute("PAGE_CONTENT", CREATE_EXPORT_ORDER_CONTENT);
+                    request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
+                    return;
+                }
             }
 
-            // Kiểm tra tồn kho và tính tổng giá
-            double totalPrice = 0;
+            // Gom nhóm theo warehouse
+            Map<Integer, List<Integer>> warehouseToProducts = new HashMap<>();
+            Map<String, Integer> quantityMap = new HashMap<>();
+
+            for (int i = 0; i < warehouseIds.length; i++) {
+                int warehouseId = Integer.parseInt(warehouseIds[i]);
+                int productId = Integer.parseInt(productIds[i]);
+                int quantity = Integer.parseInt(quantities[i]);
+
+                warehouseToProducts.computeIfAbsent(warehouseId, k -> new ArrayList<>()).add(productId);
+                quantityMap.put(warehouseId + "_" + productId, quantity);
+            }
+
+            // Tạo export_order trước, lưu exportId theo warehouse
+            Map<Integer, Integer> warehouseToExportId = new HashMap<>();
+            for (int warehouseId : warehouseToProducts.keySet()) {
+                int exportId = exportDAO.createExportOrder( //
+                        customerId,
+                        warehouseId,
+                        account.getAccount_id(),
+                        reason,
+                        note
+                );
+                if (exportId <= 0) {
+                    request.setAttribute("fail", "Không thể tạo đơn hàng cho kho ID: " + warehouseId);
+                    request.setAttribute("PAGE_CONTENT", CREATE_EXPORT_ORDER_CONTENT);
+                    request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
+                    return;
+                }
+                warehouseToExportId.put(warehouseId, exportId);
+            }
+
+            // Sau đó thêm chi tiết vào export_order_detail
             for (int i = 0; i < productIds.length; i++) {
                 int warehouseId = Integer.parseInt(warehouseIds[i]);
                 int productId = Integer.parseInt(productIds[i]);
                 int quantity = Integer.parseInt(quantities[i]);
 
-                // Kiểm tra tồn kho
                 Inventory inventory = inventoryDAO.getInventoryById(productId, warehouseId);
                 if (inventory == null || inventory.getQuantity() < quantity) {
-                    request.setAttribute("fail", "Số lượng yêu cầu vượt quá tồn kho cho sản phẩm ID: " + productId);
+                    request.setAttribute("fail", "Không đủ tồn kho cho sản phẩm ID " + productId + " ở kho " + warehouseId);
                     request.setAttribute("PAGE_CONTENT", CREATE_EXPORT_ORDER_CONTENT);
                     request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
                     return;
                 }
 
-                // Tính tổng giá
                 Products product = productDAO.getProductById(productId);
                 if (product == null) {
                     request.setAttribute("fail", "Sản phẩm không tồn tại: ID " + productId);
@@ -197,44 +229,23 @@ public class CreateRequestProductServlet extends HttpServlet {
                     request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
                     return;
                 }
+
+                int exportId = warehouseToExportId.get(warehouseId);
                 double salePrice = product.getSalePrice().doubleValue();
-                totalPrice += quantity * salePrice;
-            }
-
-            // Tạo đơn hàng xuất kho
-            int exportId = exportDAO.createExportOrder(
-                    customerId,
-                    Integer.parseInt(warehouseIds[0]), // Giả sử tất cả sản phẩm từ cùng một kho
-                    accountId,
-                    reason,
-                    note,
-                    totalPrice
-            );
-
-            if (exportId <= 0) {
-                request.setAttribute("fail", "Không thể tạo đơn hàng xuất kho.");
-                request.setAttribute("PAGE_CONTENT", CREATE_EXPORT_ORDER_CONTENT);
-                request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
-                return;
-            }
-
-            // Thêm chi tiết đơn hàng
-            for (int i = 0; i < productIds.length; i++) {
-                int productId = Integer.parseInt(productIds[i]);
-                int quantity = Integer.parseInt(quantities[i]);
-                Products product = productDAO.getProductById(productId);
-                double salePrice = product != null ? product.getSalePrice().doubleValue() : 0;
                 detailDAO.insertExportOrderDetail(exportId, productId, quantity, salePrice);
             }
 
+            // Thành công
             request.setAttribute("success", "Đơn hàng xuất kho đã được tạo thành công.");
             doGet(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("fail", "Đã xảy ra lỗi khi xử lý đơn hàng: " + e.getMessage());
+            doGet(request, response);
             request.setAttribute("PAGE_CONTENT", CREATE_EXPORT_ORDER_CONTENT);
             request.getRequestDispatcher(LAYOUT_PAGE).forward(request, response);
         }
     }
+
 }

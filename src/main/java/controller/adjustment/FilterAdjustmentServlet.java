@@ -25,7 +25,7 @@ public class FilterAdjustmentServlet extends HttpServlet {
 
         // Nhận tham số từ request
         String adjustmentDate = request.getParameter("adjustmentDate");
-        String productName = request.getParameter("productName");
+        String productCode = request.getParameter("productCode");
         String warehouseIdRaw = request.getParameter("warehouseId");
 
         int warehouseId = 0;
@@ -42,8 +42,8 @@ public class FilterAdjustmentServlet extends HttpServlet {
         if (adjustmentDate != null && !adjustmentDate.trim().isEmpty()) {
             sql.append(" AND a.adjustment_date LIKE '%").append(adjustmentDate.trim()).append("%' ");
         }
-        if (productName != null && !productName.trim().isEmpty()) {
-            sql.append(" AND p.name LIKE '%").append(productName.trim()).append("%' ");
+        if (productCode != null && !productCode.trim().isEmpty()) {
+            sql.append(" AND p.product_code LIKE '%").append(productCode.trim()).append("%' ");
         }
         if (warehouseId > 0) {
             sql.append(" AND w.warehouse_id = ").append(warehouseId).append(" ");
@@ -82,7 +82,7 @@ public class FilterAdjustmentServlet extends HttpServlet {
 
         // Cần giữ lại dữ liệu lọc khi render lại
         request.setAttribute("param.adjustmentDate", adjustmentDate);
-        request.setAttribute("param.productName", productName);
+        request.setAttribute("param.productCode", productCode);
         request.setAttribute("param.warehouseId", warehouseId);
 
         // Template include

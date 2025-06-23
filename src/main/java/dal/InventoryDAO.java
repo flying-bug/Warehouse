@@ -99,4 +99,52 @@ public class InventoryDAO extends DBConnect {
         }
         return null; // Trả về null nếu không tìm thấy
     }
+
+    // Lấy danh sách hàng tồn kho theo kho cụ thể
+    public List<Inventory> getInventoryByWarehouse(int warehouseId) {
+        List<Inventory> inventoryList = new ArrayList<>();
+        String sql = "SELECT * FROM inventory WHERE warehouse_id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, warehouseId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Inventory inventory = new Inventory(
+                            rs.getInt("product_id"),
+                            rs.getInt("warehouse_id"),
+                            rs.getInt("quantity")
+                    );
+                    inventoryList.add(inventory);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return inventoryList;
+    }
+
+    public List<Inventory> getLowInventory() {
+        List<Inventory> list = new ArrayList<>();
+        String sql = "SELECT i.* FROM inventory i " +
+                "JOIN products p ON i.product_id = p.product_id " +
+                "WHERE i.quantity < p.min_stock_level";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new Inventory(
+                        rs.getInt("product_id"),
+                        rs.getInt("warehouse_id"),
+                        rs.getInt("quantity"),
+                        rs.getTimestamp("last_updated")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+
 }

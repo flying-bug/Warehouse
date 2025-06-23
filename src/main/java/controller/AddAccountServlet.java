@@ -21,6 +21,8 @@ import java.util.UUID;
 @MultipartConfig(fileSizeThreshold = 1024 * 1024 * 2,
         maxFileSize = 1024 * 1024 * 10,
         maxRequestSize = 1024 * 1024 * 50)
+
+
 public class AddAccountServlet extends HttpServlet {
 
     private static final String UPLOAD_DIR = "uploads";
@@ -29,8 +31,7 @@ public class AddAccountServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RoleDAO roleDAO = new RoleDAO();
-        List<Roles> roleList = roleDAO.getAllRoles();
+        List<Roles> roleList = createRoleDAO().getAllRoles(); // Đã thay thế new RoleDAO()
         request.setAttribute("roles", roleList);
 
         request.setAttribute("PAGE_CONTENT", ADD_ACCOUNT_CONTENT);
@@ -72,7 +73,7 @@ public class AddAccountServlet extends HttpServlet {
                 return;
             }
 
-            AccountDAO accountDAO = new AccountDAO();
+            AccountDAO accountDAO = createAccountDAO(); // thay vì new AccountDAO()
 
             if (accountDAO.isEmailDuplicate(email)) {
                 request.setAttribute("fail", "Email đã được sử dụng");
@@ -119,7 +120,7 @@ public class AddAccountServlet extends HttpServlet {
             account.setRole_id(roleId);
 
             boolean check = accountDAO.addAccount(account);
-            request.setAttribute("roles", new RoleDAO().getAllRoles());
+            request.setAttribute("roles", createRoleDAO().getAllRoles()); // sửa
 
             if (!check) {
                 request.setAttribute("fail", "Add account failed");
@@ -136,7 +137,7 @@ public class AddAccountServlet extends HttpServlet {
     }
 
     private void repopulateForm(HttpServletRequest request, String accountName, String email, String phone, String fullName, int roleId) {
-        request.setAttribute("roles", new RoleDAO().getAllRoles());
+        request.setAttribute("roles", createRoleDAO().getAllRoles()); // sửa
         request.setAttribute("account_name", accountName);
         request.setAttribute("email", email);
         request.setAttribute("phone", phone);
@@ -162,5 +163,14 @@ public class AddAccountServlet extends HttpServlet {
             }
         }
         return null;
+    }
+
+    //  THÊM VÀO CUỐI CLASS — để test override
+    protected AccountDAO createAccountDAO() {
+        return new AccountDAO();
+    }
+
+    protected RoleDAO createRoleDAO() {
+        return new RoleDAO();
     }
 }

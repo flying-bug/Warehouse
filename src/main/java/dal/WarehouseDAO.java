@@ -4,7 +4,9 @@ import model.Warehouses;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class WarehouseDAO extends DBConnect {
 
@@ -111,6 +113,29 @@ public class WarehouseDAO extends DBConnect {
             e.printStackTrace();
         }
         return false;
+    }
+
+
+    // Trả về Map<warehouse_id, Warehouses>
+    public Map<Integer, Warehouses> getWarehouseMap() {
+        Map<Integer, Warehouses> map = new HashMap<>();
+        String sql = "SELECT * FROM warehouses";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Warehouses warehouse = new Warehouses(
+                        rs.getInt("warehouse_id"),
+                        rs.getString("name"),
+                        rs.getString("location")
+                );
+                map.put(warehouse.getWarehouseId(), warehouse);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return map;
     }
 
 }

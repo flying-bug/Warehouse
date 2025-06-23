@@ -5,7 +5,9 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AccountDAO extends DBConnect {
 
@@ -211,4 +213,32 @@ public class AccountDAO extends DBConnect {
         boolean success = dao.addAccount(acc);
         System.out.println(success ? "Tạo tài khoản thành công!" : "Tạo tài khoản thất bại.");
     }
+
+    public Map<Integer, Accounts> getAllAccountsMap() {
+        Map<Integer, Accounts> map = new HashMap<>();
+        String sql = "SELECT * FROM accounts";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Accounts acc = new Accounts(
+                        rs.getInt("account_id"),
+                        rs.getString("username"),
+                        rs.getString("password"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getInt("role_id"),
+                        rs.getString("profile_image"),
+                        rs.getInt("status"),
+                        rs.getTimestamp("created_at")
+                );
+                map.put(acc.getAccount_id(), acc);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
+    }
+
 }

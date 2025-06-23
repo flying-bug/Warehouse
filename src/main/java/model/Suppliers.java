@@ -5,6 +5,8 @@ public class Suppliers {
     private String name;
     private String phone;
     private String address;
+    private int status;
+    private String email;
 
     // Default Constructor
     public Suppliers() {
@@ -16,6 +18,22 @@ public class Suppliers {
         this.name = name;
         this.phone = phone;
         this.address = address;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     // Getters and Setters
