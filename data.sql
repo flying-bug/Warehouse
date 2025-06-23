@@ -156,8 +156,8 @@ CREATE TABLE import_order_details (
     quantity_received INT DEFAULT 0,                   -- Số lượng đã nhận
     quantity_invoiced INT DEFAULT 0,                   -- Số lượng đã lập hóa đơn
 
-    import_status VARCHAR(20) DEFAULT 'Scheduled'
-        CHECK (import_status IN ('Scheduled', 'Done', 'Cancel')),
+    import_status VARCHAR(20) DEFAULT 'Draft'
+        CHECK (import_status IN ('Draft', 'RFQ Sent', 'Purchase Order', 'Cancelled', 'Received')),
 
     FOREIGN KEY (import_id) REFERENCES import_orders(import_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
